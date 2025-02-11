@@ -4,39 +4,26 @@
 
 ### A. Install .NET 8.0 SDK
 
-1. **Download the Installer:**
-   - Go to the official [.NET 8 download page](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
-   - Under “SDK,” select the Windows installer (typically the x64 version).
-
-2. **Run the Installer:**
-   - Execute the downloaded installer and follow the on-screen instructions.
-   - After installation, open a Command Prompt or PowerShell and run:
-     ```bash
-     dotnet --version
-     ```
-     This should display the installed .NET version (e.g., `8.0.x`).
+- Go to the official [.NET 8 download page](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
+- After installation, verify by running in a terminal:
+   ```bash
+   dotnet --version
+   ```
+   This should display the installed .NET version (e.g., `8.0.x`).
 
 ### B. Install Node.js (which includes npm)
 
-1. **Download Node.js:**
-   - Visit [https://nodejs.org](https://nodejs.org) and download the **LTS (Long Term Support)** version for Windows.
+- Visit [https://nodejs.org](https://nodejs.org) and download the **LTS (Long Term Support)** version.
 
-2. **Run the Installer:**
-   - Run the Node.js installer and follow the prompts.
-   - After installation, open a Command Prompt or PowerShell and verify by running:
-     ```bash
-     node --version
-     npm --version
-     ```
-     Both commands should output version numbers.
+- After installation, verify by running in a terminal:
+   ```bash
+   node --version
+   npm --version
+   ```
+   Both commands should output version numbers (node `v22.13.1` and npm `11.1.0` by 11 Feb 2025).
 
 ### C. Install Git
-
-1. **Download Git:**
-   - Go to [https://git-scm.com/download/win](https://git-scm.com/download/win) and download the Git installer for Windows.
-
-2. **Run the Installer:**
-   - Follow the installer prompts.
+- Go to [https://git-scm.com/download/win](https://git-scm.com/download/win) and download the Git installer.
 
 ---
 
