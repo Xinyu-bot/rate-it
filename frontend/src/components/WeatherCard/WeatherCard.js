@@ -1,6 +1,12 @@
-// src/components/WeatherCard.js
-import React from 'react';
-import styles from '../styles/WeatherForecastStyles';
+import React from "react";
+import styles from "./WeatherCard.styles";
+
+const getBackgroundColor = (temperatureC) => {
+  if (temperatureC < 0) return "#00f";
+  if (temperatureC < 15) return "#0ff";
+  if (temperatureC < 25) return "#0f0";
+  return "#f00";
+};
 
 const WeatherCard = ({ forecast }) => {
   const cardStyles = {
@@ -24,15 +30,6 @@ const WeatherCard = ({ forecast }) => {
       </p>
     </div>
   );
-};
-
-// Helper function for dynamic background color based on temperature
-const getBackgroundColor = (tempC) => {
-  if (tempC > 30) return '#ff9999';
-  if (tempC > 20) return '#ffd699';
-  if (tempC > 10) return '#ffff99';
-  if (tempC > 0) return '#99ff99';
-  return '#99ccff';
 };
 
 export default WeatherCard;

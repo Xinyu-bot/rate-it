@@ -1,6 +1,6 @@
 // src/App.js
 import React from 'react';
-import WeatherForecast from './WeatherForecast';
+import WeatherForecast from './pages/WeatherForecast';
 
 function App() {
   return (
