@@ -1,5 +1,7 @@
 // src/WeatherForecast.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import styles from "./styles/WeatherForecastStyles";
+import WeatherCard from "./components/WeatherCard";
 
 function WeatherForecast() {
   const [forecasts, setForecasts] = useState([]);
@@ -7,20 +9,21 @@ function WeatherForecast() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the weather forecast from your backend API
-    fetch('https://localhost:7217/weatherforecast')
-      .then((response) => {
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/weather/forecast`)
+      .then(async (response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok.');
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Network response was not ok");
         }
         return response.json();
       })
-      .then((data) => {
+      .then(({ data }) => {
+        // Destructure the data from response
         setForecasts(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Error fetching weather data:', err);
+        console.error("Error fetching weather data:", err);
         setError(err);
         setLoading(false);
       });
@@ -39,61 +42,11 @@ function WeatherForecast() {
       <h1 style={styles.title}>Weather Forecast</h1>
       <div style={styles.cardContainer}>
         {forecasts.map((forecast, index) => (
-          <div key={index} style={styles.card}>
-            <h2 style={styles.cardTitle}>
-              {new Date(forecast.date).toLocaleDateString()}
-            </h2>
-            <p style={styles.cardText}>
-              <strong>Temp (C):</strong> {forecast.temperatureC}°C
-            </p>
-            <p style={styles.cardText}>
-              <strong>Temp (F):</strong> {forecast.temperatureF}°F
-            </p>
-            <p style={styles.cardText}>
-              <strong>Summary:</strong> {forecast.summary}
-            </p>
-          </div>
+          <WeatherCard key={index} forecast={forecast} />
         ))}
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-  },
-  title: {
-    textAlign: 'center',
-    color: '#333',
-    marginBottom: '20px',
-  },
-  cardContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  card: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-    padding: '20px',
-    margin: '10px',
-    width: '250px',
-  },
-  cardTitle: {
-    marginBottom: '10px',
-    color: '#2c3e50',
-  },
-  cardText: {
-    margin: '5px 0',
-  },
-  message: {
-    textAlign: 'center',
-    fontSize: '18px',
-    padding: '50px',
-  },
-};
 
 export default WeatherForecast;
