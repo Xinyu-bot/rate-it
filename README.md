@@ -82,5 +82,8 @@ npm start
 
 - **Frontend-Backend Integration:**
   - The React application (running on port 3000) should be able to fetch data from the backend (configured via CORS to allow `http://localhost:3000`).
-
+  - For local deployment, on the first time, set up the `.env` file by: 
+  ```bash 
+  echo "REACT_APP_API_BASE_URL=https://localhost:7217" >> ./frontend/.env
+  ``` 
 ---
