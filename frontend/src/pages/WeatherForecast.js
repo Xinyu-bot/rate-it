@@ -1,7 +1,7 @@
 // src/WeatherForecast.js
 import React, { useEffect, useState } from "react";
-import styles from "./styles/WeatherForecastStyles";
-import WeatherCard from "./components/WeatherCard";
+import styles from "./WeatherForecast.styles";
+import WeatherCard from "../components/WeatherCard/WeatherCard";
 
 function WeatherForecast() {
   const [forecasts, setForecasts] = useState([]);
