@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using backend.DTOs;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
 
 namespace backend.Controllers
 {
@@ -11,11 +12,29 @@ namespace backend.Controllers
     public class WeatherController(IWeatherService weatherService) : ControllerBase
     {
         private readonly IWeatherService _weatherService = weatherService;
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         [HttpGet("authorize-forecast")]
         [Authorize]
         public IActionResult GetWeatherForecasts()
         {
+            // var claims = User.Claims.Select(c => new { c.Type, c.Value });
+            // Console.WriteLine(JsonSerializer.Serialize(claims, new JsonSerializerOptions { WriteIndented = true }));
+            var userMetadataClaim = User.Claims.FirstOrDefault(c => c.Type == "user_metadata")?.Value;
+            if (userMetadataClaim == null)
+            {
+                return Unauthorized();
+            }
+            string userMetadataJson = userMetadataClaim;
+            var metadata = JsonSerializer.Deserialize<UserMetadata>(userMetadataJson, _jsonOptions);
+            if (metadata != null)
+            {
+                Console.WriteLine($"Email: {metadata.Email}, EmailVerified: {metadata.EmailVerified}, PhoneVerified: {metadata.PhoneVerified}, Sub: {metadata.Sub}");
+            }
+
             var forecasts = _weatherService.GetWeatherForecasts();
             if (forecasts == null)
             {
