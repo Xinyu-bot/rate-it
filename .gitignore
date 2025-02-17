@@ -17,6 +17,7 @@ backend/obj/
 backend/*.user
 backend/*.lock.json
 backend/appsettings.*.json
+backend/.env
 
 # Visual Studio specific
 .vscode/
