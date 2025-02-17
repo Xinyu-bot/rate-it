@@ -10,7 +10,7 @@ function SignupPage() {
     e.preventDefault();
     setStatus("");
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: formState.email,
       password: formState.password,
     });
@@ -19,6 +19,7 @@ function SignupPage() {
       setStatus(error.message);
     } else {
       // data.user should exist if sign up succeeded
+      console.log("Sign up successful:", data.user.id);
       setStatus(
         "Sign Up successful! Check your email for a confirmation link (if enabled in Supabase)."
       );

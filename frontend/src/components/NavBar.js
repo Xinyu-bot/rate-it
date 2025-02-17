@@ -9,8 +9,15 @@ function NavBar() {
   return (
     <nav style={{ padding: "1rem", borderBottom: "1px solid #ccc" }}>
       <Link to="/" style={{ marginRight: "1rem" }}>
-        MyApp
+        Home
       </Link>
+      <Link to="/weather" style={{ marginRight: "1rem" }}>
+        Public Forecast
+      </Link>
+      <Link to="/authorized-forecast" style={{ marginRight: "1rem" }}>
+        Authorized Forecast
+      </Link>
+
       {isAuthenticated ? (
         <button onClick={logout} style={{ float: "right" }}>
           Logout

@@ -14,7 +14,7 @@ function LoginPage() {
     e.preventDefault();
     try {
       setError("");
-      const { error: supaError } = await supabase.auth.signInWithPassword(
+      const { data, error: supaError } = await supabase.auth.signInWithPassword(
         {
           email: formState.email,
           password: formState.password,
@@ -25,6 +25,7 @@ function LoginPage() {
       }
 
       // If successful, onAuthStateChange in AuthContext will set the session
+      console.log("Login successful:", data.user.id);
       navigate("/");
     } catch (err) {
       setError(err.message || "Login failed");

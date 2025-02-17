@@ -18,7 +18,7 @@ function ChatPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`, // <--- attach the token
+          Authorization: `Bearer ${accessToken}`, // Send the access token in the Authorization header
         },
         body: JSON.stringify({ userMessage: message }),
       });
@@ -29,6 +29,8 @@ function ChatPage() {
       setResponse("Error occurred.");
     }
   };
+
+  console.log(localStorage.getItem("userId"));
 
   return (
     <div style={{ padding: "2rem" }}>
