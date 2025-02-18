@@ -1,8 +1,12 @@
 name: Backend CI/CD
 
 on:
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'backend/**'
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths:
       - 'backend/**'
 
