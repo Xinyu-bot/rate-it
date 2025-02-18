@@ -16,13 +16,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Get the ALLOWED_ORIGINS env var, default to empty string if not set
+var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS") ?? "";
+
+// Split on ';' (or commas) to handle multiple origins
+var originsArray = allowedOrigins
+    .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(originsArray)
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -54,12 +62,12 @@ builder.Services
         };
     });
 
-var jwtKey = jwtSection["Key"];
-var jwtIssuer = jwtSection["Issuer"];
-var jwtAudience = jwtSection["Audience"];
-Console.WriteLine($"JWT Key: {jwtKey}");
-Console.WriteLine($"JWT Issuer: {jwtIssuer}");
-Console.WriteLine($"JWT Audience: {jwtAudience}");
+// var jwtKey = jwtSection["Key"];
+// var jwtIssuer = jwtSection["Issuer"];
+// var jwtAudience = jwtSection["Audience"];
+// Console.WriteLine($"JWT Key: {jwtKey}");
+// Console.WriteLine($"JWT Issuer: {jwtIssuer}");
+// Console.WriteLine($"JWT Audience: {jwtAudience}");
 
 var app = builder.Build();
 
