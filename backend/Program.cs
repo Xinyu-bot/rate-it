@@ -28,7 +28,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(originsArray)
+        // policy.WithOrigins(originsArray)
+        policy.AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
@@ -61,13 +62,6 @@ builder.Services
             ValidateLifetime = true
         };
     });
-
-// var jwtKey = jwtSection["Key"];
-// var jwtIssuer = jwtSection["Issuer"];
-// var jwtAudience = jwtSection["Audience"];
-// Console.WriteLine($"JWT Key: {jwtKey}");
-// Console.WriteLine($"JWT Issuer: {jwtIssuer}");
-// Console.WriteLine($"JWT Audience: {jwtAudience}");
 
 var app = builder.Build();
 
