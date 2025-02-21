@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/weather")]
+    [Route("api/[controller]")]
     public class WeatherController(IWeatherService weatherService) : ControllerBase
     {
         private readonly IWeatherService _weatherService = weatherService;
@@ -30,9 +30,9 @@ namespace backend.Controllers
             }
             string userMetadataJson = userMetadataClaim;
             var metadata = JsonSerializer.Deserialize<UserMetadata>(userMetadataJson, _jsonOptions);
-            if (metadata != null)
+            if (metadata == null)
             {
-                Console.WriteLine($"Email: {metadata.Email}, EmailVerified: {metadata.EmailVerified}, PhoneVerified: {metadata.PhoneVerified}, Sub: {metadata.Sub}");
+                return Unauthorized();
             }
 
             var forecasts = _weatherService.GetWeatherForecasts();
