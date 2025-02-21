@@ -63,8 +63,7 @@ function MyProfilePage() {
     return <p>No profile data available.</p>;
   }
 
-  // Since your backend likely returns { code, msg, data }, you can access user details at profile.data
-  const userDetail = profile.data; // for convenience
+  const userDetail = profile.data; 
   return (
     <div>
       <h2>My Profile</h2>

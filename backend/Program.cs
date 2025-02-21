@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen();
 // Get the ALLOWED_ORIGINS env var, default to empty string if not set
 var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS") ?? "";
 
-// Split on ';' (or commas) to handle multiple origins
+// Split on ';' to handle multiple origins
 var originsArray = allowedOrigins
     .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
