@@ -1,8 +1,8 @@
-// src/pages/LoginPage.js
+// src/pages/User/LoginPage.js
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import supabase from "../services/supabaseClient";
+import { AuthContext } from "../../context/AuthContext";
+import supabase from "../../services/supabaseClient";
 
 function LoginPage() {
   const { isAuthenticated } = useContext(AuthContext);

@@ -17,6 +17,9 @@ function NavBar() {
       <Link to="/authorized-forecast" style={{ marginRight: "1rem" }}>
         Authorized Forecast
       </Link>
+      <Link to="/user/me" style={{ marginRight: "1rem" }}>
+        My Profile
+      </Link>
 
       {isAuthenticated ? (
         <button onClick={logout} style={{ float: "right" }}>
