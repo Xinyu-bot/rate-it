@@ -21,20 +21,6 @@ namespace backend.Controllers
         [Authorize]
         public IActionResult GetWeatherForecasts()
         {
-            // var claims = User.Claims.Select(c => new { c.Type, c.Value });
-            // Console.WriteLine(JsonSerializer.Serialize(claims, new JsonSerializerOptions { WriteIndented = true }));
-            var userMetadataClaim = User.Claims.FirstOrDefault(c => c.Type == "user_metadata")?.Value;
-            if (userMetadataClaim == null)
-            {
-                return Unauthorized();
-            }
-            string userMetadataJson = userMetadataClaim;
-            var metadata = JsonSerializer.Deserialize<UserMetadata>(userMetadataJson, _jsonOptions);
-            if (metadata == null)
-            {
-                return Unauthorized();
-            }
-
             var forecasts = _weatherService.GetWeatherForecasts();
             if (forecasts == null)
             {
