@@ -1,4 +1,4 @@
-namespace backend.Models
+namespace backend.DTOs
 {
     public class Response<T>(int code, string msg, T data)
     {
