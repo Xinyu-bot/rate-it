@@ -1,6 +1,6 @@
-// src/pages/SignupPage.js
+// src/pages/User/SignupPage.js
 import React, { useState } from "react";
-import supabase from "../services/supabaseClient";
+import supabase from "../../services/supabaseClient";
 
 function SignupPage() {
   const [formState, setFormState] = useState({ email: "", password: "" });
