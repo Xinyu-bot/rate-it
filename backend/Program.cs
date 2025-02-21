@@ -4,13 +4,32 @@ using Microsoft.IdentityModel.Tokens;
 using backend.Middleware;
 using backend.Repositories;
 using backend.Services;
-
+using backend.Data;
 using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 // Load environment variables from the .env file in the root directory
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Build the connection string from environment variables
+var host = Environment.GetEnvironmentVariable("DB_HOST") ?? "PLACE_HOLDER";
+var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
+var username = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "PLACE_HOLDER";
+var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "PLACE_HOLDER";
+var database = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "PLACE_HOLDER";
+var connectionString = $"Host={host};Port={port};Username={username};Password={password};Database={database};SSL Mode=Require;Trust Server Certificate=true;";
+if (connectionString.Contains("PLACE_HOLDER"))
+{
+    Console.WriteLine("Error: Database connection string not set");
+    Environment.Exit(1);
+}
+
+// Register the database context
+builder.Services.AddDbContext<UserDetailDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Add base services
 builder.Services.AddControllers();
@@ -35,9 +54,13 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Register your dependencies
+// Register repositories
 builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Register services
 builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Configure JWT authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -63,6 +86,7 @@ builder.Services
         };
     });
 
+// BUILD THE APP
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
