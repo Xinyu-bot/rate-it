@@ -68,19 +68,22 @@ function MyProfilePage() {
   return (
     <div>
       <h2>My Profile</h2>
-      <p>Code: {profile.code}</p>
-      <p>Message: {profile.msg}</p>
       <hr />
       <p>
-        <strong>User Name:</strong> {userDetail.userName}
+        <strong>User ID:</strong> {userDetail.user_id}
       </p>
       <p>
-        <strong>User ID:</strong> {userDetail.userId}
+        <strong>User Name:</strong> {userDetail.user_name}
       </p>
       <p>
-        <strong>Points Balance:</strong> {userDetail.userPointsBalance}
+        <strong>Points Balance:</strong> {userDetail.balance}
       </p>
-      {/* Display more fields as needed */}
+      <p>
+        <strong>Status:</strong> {userDetail.status}
+      </p>
+      <p>
+        <strong>Permission:</strong> {userDetail.permission}
+      </p>
     </div>
   );
 }
