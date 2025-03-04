@@ -11,12 +11,6 @@ function NavBar() {
       <Link to="/" style={{ marginRight: "1rem" }}>
         Home
       </Link>
-      <Link to="/weather" style={{ marginRight: "1rem" }}>
-        Public Forecast
-      </Link>
-      <Link to="/authorized-forecast" style={{ marginRight: "1rem" }}>
-        Authorized Forecast
-      </Link>
       <Link to="/user/me" style={{ marginRight: "1rem" }}>
         My Profile
       </Link>
