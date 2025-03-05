@@ -999,6 +999,8 @@ components:
           type: integer
         downvote_count:
           type: integer
+        replies_count:
+          type: integer
     CommentReply:
       type: object
       properties:
