@@ -3,12 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.0",
     "@supabase/supabase-js": "^2.48.1",
+    "axios": "^1.8.1",
     "cra-template": "1.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
+    "sass": "^1.85.1",
+    "sass-loader": "^16.0.5",
     "web-vitals": "^4.2.4"
   },
   "scripts": {

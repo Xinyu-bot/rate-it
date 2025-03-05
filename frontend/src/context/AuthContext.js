@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
         // If a user is present, extract the access token
         if (data.session?.access_token) {
           setAccessToken(data.session.access_token);
+          localStorage.setItem("accessToken", data.session.access_token);
         }
         if (data.session?.user) {
           const idFromSupabase = data.session.user.id;
@@ -35,8 +36,10 @@ export function AuthProvider({ children }) {
         setSession(newSession);
         if (newSession?.access_token) {
           setAccessToken(newSession.access_token);
+          localStorage.setItem("accessToken", newSession.access_token);
         } else {
           setAccessToken(null);
+          localStorage.removeItem("accessToken");
         }
 
         if (newSession?.user) {
@@ -61,6 +64,7 @@ export function AuthProvider({ children }) {
     setAccessToken(null);
     setUserId(null);
     localStorage.removeItem("userId");
+    localStorage.removeItem("accessToken");
   };
 
   return (

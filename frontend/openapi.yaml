@@ -1,0 +1,1028 @@
+openapi: 3.0.3
+info:
+  title: Open Forum API
+  description: API endpoints for an open forum for public entities.
+  version: "1.0.0"
+servers:
+  - url: https://api.example.com
+paths:
+  /user/me:
+    get:
+      summary: Retrieve the authenticated user's details.
+      description: Fetch details of the currently authenticated user using the JWT token.
+      responses:
+        '200':
+          description: Authenticated user's details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUser'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+    
+    put:
+      summary: Update the authenticated user.
+      description: Update the authenticated user's information (e.g., profile details, preferences).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUser'
+        '400':
+          description: Bad request. Invalid input.
+        '401':
+          description: Unauthorized. Missing or invalid token.
+  /users/{id}:
+    get:
+      summary: Retrieve a specific user.
+      description: Retrieve details of a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUser'
+    put:
+      summary: Update a user.
+      description: Update user information (role, status, etc.).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUser'
+  /categories:
+    get:
+      summary: List categories.
+      description: Fetch the existing list of categories.
+      responses:
+        '200':
+          description: A list of categories.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCategories'
+  /entities:
+    get:
+      summary: List entities.
+      description: List all entities, optionally filtered by category.
+      parameters:
+        - in: query
+          name: category_id
+          schema:
+            type: integer
+          description: Filter entities by category.
+        - in: query
+          name: entity_name
+          schema:
+            type: string
+          description: Filter by name
+      responses:
+        '200':
+          description: A list of entities.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntities'
+    post:
+      summary: Create an entity.
+      description: Create an approved entity (admin or moderator only).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entity'
+      responses:
+        '200':
+          description: Entity created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntity'
+  /entities/{id}:
+    get:
+      summary: Retrieve an entity.
+      description: Retrieve details of a specific entity.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Entity details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntity'
+    put:
+      summary: Update an entity.
+      description: Update an entity’s details (admin or moderator only).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entity'
+      responses:
+        '200':
+          description: Entity updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntity'
+    delete:
+      summary: Delete an entity.
+      description: Delete an entity (admin only).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Entity deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseDelete'
+  /entity_suggestions:
+    get:
+      summary: List entity suggestions.
+      description: List all entity suggestions (moderator or admin only).
+      responses:
+        '200':
+          description: A list of entity suggestions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntitySuggestions'
+    post:
+      summary: Submit an entity suggestion.
+      description: Submit a new entity suggestion.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntitySuggestion'
+      responses:
+        '200':
+          description: Suggestion submitted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntitySuggestion'
+  /entity_suggestions/{id}:
+    get:
+      summary: Retrieve an entity suggestion.
+      description: Retrieve details of a specific entity suggestion.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Suggestion details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntitySuggestion'
+    put:
+      summary: Update an entity suggestion.
+      description: Approve or reject an entity suggestion (moderator only).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntitySuggestionUpdate'
+      responses:
+        '200':
+          description: Suggestion updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseEntitySuggestion'
+    delete:
+      summary: Delete an entity suggestion.
+      description: Remove an unapproved suggestion (moderator or admin).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Suggestion removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseDelete'
+  /bans:
+    get:
+      summary: List user bans.
+      description: List all current user bans (admin only).
+      responses:
+        '200':
+          description: A list of user bans.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserBans'
+    post:
+      summary: Ban a user.
+      description: Ban a user (admin only).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBan'
+      responses:
+        '200':
+          description: User banned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserBan'
+  /bans/{id}:
+    delete:
+      summary: Revoke a ban.
+      description: Revoke a user ban (admin only).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ban revoked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseDelete'
+  /comment_threads:
+    get:
+      summary: List comment threads.
+      description: List all comment threads, optionally filtered by entity.
+      parameters:
+        - in: query
+          name: entity_id
+          schema:
+            type: integer
+          description: Filter comment threads by entity.
+      responses:
+        '200':
+          description: A list of comment threads.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentThreads'
+    post:
+      summary: Create a comment thread.
+      description: Create a new comment thread with rating and content.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentThread'
+      responses:
+        '201':
+          description: Comment thread created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentThread'
+  /comment_threads/{comment_thread_id}:
+    get:
+      summary: Retrieve a comment thread.
+      description: Retrieve a specific comment thread.
+      parameters:
+        - name: comment_thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment thread details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentThread'
+    put:
+      summary: Update a comment thread.
+      description: Update a comment thread (owner or moderator).
+      parameters:
+        - name: comment_thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentThread'
+      responses:
+        '200':
+          description: Comment thread updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentThread'
+    delete:
+      summary: Delete a comment thread.
+      description: Delete a comment thread (owner or moderator).
+      parameters:
+        - name: comment_thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment thread deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseDelete'
+  /comment_threads/{comment_thread_id}/replies:
+    get:
+      summary: List comment replies.
+      description: List all comment replies under a comment thread.
+      parameters:
+        - name: comment_thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of comment replies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentReplies'
+  /comment_replies/{comment_reply_id}:
+    get:
+      summary: Retrieve a comment reply.
+      description: Retrieve a specific comment reply.
+      parameters:
+        - name: comment_reply_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment reply details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentReply'
+    put:
+      summary: Update a comment reply.
+      description: Update a comment reply (owner or moderator).
+      parameters:
+        - name: comment_reply_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentReply'
+      responses:
+        '200':
+          description: Comment reply updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseCommentReply'
+    delete:
+      summary: Delete a comment reply.
+      description: Delete a comment reply (owner or moderator).
+      parameters:
+        - name: comment_reply_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment reply deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseDelete'
+  /votes/comment_thread/{comment_thread_id}:
+    post:
+      summary: Cast a vote on a comment thread.
+      description: Cast an upvote or downvote on a comment thread.
+      parameters:
+        - name: comment_thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vote'
+      responses:
+        '200':
+          description: Vote cast.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseVote'
+    delete:
+      summary: Remove a vote from a comment thread.
+      description: Remove your existing vote from a comment thread.
+      parameters:
+        - name: comment_thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Vote removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseVote'
+  /users/{id}/profile:
+    get:
+      summary: Retrieve user profile.
+      description: Retrieve a user’s profile information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User profile details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserProfile'
+  /users/{id}/threads:
+    get:
+      summary: List user's comment threads.
+      description: List all comment threads created by a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of comment threads.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserThreads'
+  /users/{id}/replies:
+    get:
+      summary: List user's comment replies.
+      description: List all comment replies created by a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of comment replies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserReplies'
+  /users/{id}/votes:
+    get:
+      summary: List user's votes.
+      description: List all votes cast by a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of votes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserVotes'
+  /user/me/profile:
+    get:
+      summary: Retrieve authenticated user's profile.
+      description: Fetch profile details of the currently authenticated user using the JWT token.
+      responses:
+        '200':
+          description: User profile details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserProfile'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+  /user/me/threads:
+    get:
+      summary: List authenticated user's comment threads.
+      description: List all comment threads created by the authenticated user.
+      responses:
+        '200':
+          description: A list of comment threads.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserThreads'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+
+  /user/me/replies:
+    get:
+      summary: List authenticated user's comment replies.
+      description: List all comment replies created by the authenticated user.
+      responses:
+        '200':
+          description: A list of comment replies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserReplies'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+
+  /user/me/votes:
+    get:
+      summary: List authenticated user's votes.
+      description: List all votes cast by the authenticated user.
+      responses:
+        '200':
+          description: A list of votes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponseUserVotes'
+        '401':
+          description: Unauthorized. Missing or invalid token.
+
+
+components:
+  schemas:
+    APIResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        msg:
+          type: string
+          example: Success
+        data:
+          type: object
+    APIResponseUser:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+    APIResponseToken:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                token:
+                  type: string
+    APIResponseUsers:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+    APIResponseCategories:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Category'
+    APIResponseEntities:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                entities:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Entity'
+    APIResponseEntity:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Entity'
+    APIResponseEntitySuggestions:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                suggestions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EntitySuggestion'
+    APIResponseEntitySuggestion:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/EntitySuggestion'
+    APIResponseUserBans:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                bans:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserBan'
+    APIResponseUserBan:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserBan'
+    APIResponseDelete:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              example:
+                deleted_id: "12345"
+    APIResponseCommentThreads:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                comment_threads:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CommentThread'
+    APIResponseCommentThread:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CommentThread'
+    APIResponseCommentReplies:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                comment_replies:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CommentReply'
+    APIResponseCommentReply:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CommentReply'
+    APIResponseVote:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Vote'
+    APIResponseUserProfile:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserProfile'
+    APIResponseUserThreads:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                threads:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CommentThread'
+    APIResponseUserReplies:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                replies:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CommentReply'
+    APIResponseUserVotes:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                votes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Vote'
+    # Data Object Schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        level:
+          type: integer
+        user_point_balance:
+          type: integer
+        role:
+          type: integer
+        status:
+          type: integer
+        profile_picture:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    UserSignup:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        profile_picture:
+          type: string
+        role:
+          type: integer
+        status:
+          type: integer
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        profile_picture:
+          type: string
+        level:
+          type: integer
+        user_point_balance:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Entity:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        category_id:
+          type: integer
+        description:
+          type: string
+        created_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        is_approved:
+          type: boolean
+    EntitySuggestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        category_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        reviewed_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        reviewed_at:
+          type: string
+          format: date-time
+    EntitySuggestionUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+    UserBan:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        banned_by:
+          type: integer
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    CommentThread:
+      type: object
+      properties:
+        comment_thread_id:
+          type: string
+        entity_id:
+          type: integer
+        user_id:
+          type: integer
+        rating:
+          type: integer
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        upvote_count:
+          type: integer
+        downvote_count:
+          type: integer
+    CommentReply:
+      type: object
+      properties:
+        comment_reply_id:
+          type: string
+        comment_thread_id:
+          type: string
+        parent_reply_id:
+          type: string
+        user_id:
+          type: integer
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Vote:
+      type: object
+      properties:
+        comment_thread_id:
+          type: string
+        vote_type:
+          type: string
+          enum: [upvote, downvote]
+        created_at:
+          type: string
+          format: date-time

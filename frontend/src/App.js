@@ -1,8 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import LoginPage from "./pages/User/LoginPage";
-import SignupPage from "./pages/User/SignupPage";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/Auth/LoginPage";
+import SignupPage from "./pages/Auth/SignupPage";
 import MyProfilePage from "./pages/User/MyProfilePage";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
 
       {/* Define routes for different pages */}
       <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/user/me" element={<MyProfilePage />} />

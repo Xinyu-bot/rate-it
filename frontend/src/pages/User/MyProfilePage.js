@@ -1,90 +1,82 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import request from "../../utils/request";
 
-function MyProfilePage() {
-  const { isAuthenticated, accessToken } = useContext(AuthContext);
-
+const MyProfilePage = () => {
+  const { isAuthenticated } = useContext(AuthContext);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    // If user isn't authenticated, there's no point fetching profile data
+    // If the user is not authenticated, set an error immediately.
     if (!isAuthenticated) {
       setError(new Error("User must be logged in to view this page."));
       setLoading(false);
       return;
     }
 
-    // Reset any previous error/loading states
+    // Reset any previous error/loading state and fetch profile data
     setError(null);
     setLoading(true);
 
-    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          // Attempt to parse JSON error; fallback to generic message
-          let errorMsg = "Network response was not ok";
-          try {
-            const errorData = await response.json();
-            errorMsg = errorData.message || errorMsg;
-          } catch {}
-          throw new Error(errorMsg);
+    const fetchProfile = async () => {
+      try {
+        const response = await request.getCurrentUser();
+
+        // Expected response structure: { code, msg, data: { ...user fields... } }
+        if (response.data && response.data.code === 0 && response.data.data) {
+          setProfile(response.data.data);
+        } else {
+          throw new Error("Failed to fetch profile data");
         }
-        return response.json();
-      })
-      .then((data) => {
-        // data should look like: { code, msg, data: { ...user fields... } }
-        setProfile(data); // store the entire response object
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err);
+      } finally {
         setLoading(false);
-      });
-  }, [isAuthenticated, accessToken]);
+      }
+    };
+
+    fetchProfile();
+  }, [isAuthenticated]);
 
   if (loading) {
     return <p>Loading profile...</p>;
   }
 
   if (error) {
-    return <p style={{ color: "red" }}>Error: {error.message}</p>;
+    return (
+      <p className="error-message" style={{ color: "red" }}>
+        Error: {error.message}
+      </p>
+    );
   }
 
   if (!profile) {
-    // If there's no error but profile is still null, handle gracefully
     return <p>No profile data available.</p>;
   }
 
-  const userDetail = profile.data; 
   return (
-    <div>
+    <div className="home-page my-profile-page">
       <h2>My Profile</h2>
       <hr />
       <p>
-        <strong>User ID:</strong> {userDetail.user_id}
+        <strong>User ID:</strong> {profile.id}
       </p>
       <p>
-        <strong>User Name:</strong> {userDetail.user_name}
+        <strong>User Name:</strong> {profile.username}
       </p>
       <p>
-        <strong>Points Balance:</strong> {userDetail.balance}
+        <strong>Points Balance:</strong> {profile.user_point_balance}
       </p>
       <p>
-        <strong>Status:</strong> {userDetail.status}
+        <strong>Status:</strong> {profile.status}
       </p>
       <p>
-        <strong>Permission:</strong> {userDetail.permission}
+        <strong>Permission:</strong> {profile.role}
       </p>
     </div>
   );
-}
+};
 
 export default MyProfilePage;
