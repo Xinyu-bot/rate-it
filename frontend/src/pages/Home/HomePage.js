@@ -5,9 +5,9 @@ import {
   fetchCategoriesSuccess,
   fetchCategoriesFailure,
   setSelectedCategory,
-} from "../store/slices/categoriesSlice";
-import request from "../utils/request";
-import "../styles/HomePage.scss";
+} from "../../store/slices/categoriesSlice";
+import request from "../../utils/request";
+import "./HomePage.scss";
 
 const HomePage = () => {
   const dispatch = useDispatch();
