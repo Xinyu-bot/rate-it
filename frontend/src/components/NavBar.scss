@@ -1,0 +1,94 @@
+.navbar {
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  
+  .navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+  
+  .navbar-logo {
+    a {
+      text-decoration: none;
+      
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #4a90e2;
+      }
+    }
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 1.5rem;
+    
+    .nav-link {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.2s;
+      
+      &:hover {
+        color: #4a90e2;
+      }
+    }
+  }
+  
+  .navbar-auth {
+    display: flex;
+    gap: 1rem;
+    
+    .auth-button {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      
+      &.login-button {
+        color: #4a90e2;
+        border: 1px solid #4a90e2;
+        background-color: transparent;
+        
+        &:hover {
+          background-color: rgba(74, 144, 226, 0.1);
+        }
+      }
+      
+      &.signup-button {
+        color: white;
+        background-color: #4a90e2;
+        border: 1px solid #4a90e2;
+        
+        &:hover {
+          background-color: #3a7bc8;
+        }
+      }
+      
+      &.logout-button {
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+        background-color: transparent;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: rgba(231, 76, 60, 0.1);
+        }
+      }
+    }
+  }
+} 

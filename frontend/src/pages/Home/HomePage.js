@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   fetchCategoriesStart,
   fetchCategoriesSuccess,
@@ -46,7 +47,7 @@ const HomePage = () => {
       }
     };
 
-    // If we haven’t loaded categories yet, fetch them
+    // If we haven't loaded categories yet, fetch them
     if (!categories || categories.length === 0) {
       fetchCategories();
     }
@@ -162,10 +163,17 @@ const HomePage = () => {
           <h2>Search Results</h2>
           <div className="entities-list">
             {entities.map((entity) => (
-              <div key={entity.id} className="entity-card">
-                <h3>{entity.name}</h3>
-                <p>{entity.description}</p>
-              </div>
+              <Link
+                to={`/entities/${entity.id}`}
+                key={entity.id}
+                className="entity-card-link"
+              >
+                <div className="entity-card">
+                  <h3>{entity.name}</h3>
+                  <p>{entity.description}</p>
+                  <div className="view-details">View Details</div>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

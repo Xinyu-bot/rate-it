@@ -1,0 +1,29 @@
+.comment-list {
+  margin-top: 2rem;
+  
+  &.empty {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    
+    p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .comment-count {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  .comments {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+} 
