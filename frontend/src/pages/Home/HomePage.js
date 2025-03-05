@@ -7,7 +7,7 @@ import {
   fetchCategoriesFailure,
   setSelectedCategory,
 } from "../../store/slices/categoriesSlice";
-import request from "../../utils/request";
+import { request } from "../../utils/request";
 import "./HomePage.scss";
 
 const HomePage = () => {
@@ -73,6 +73,11 @@ const HomePage = () => {
   // Handle search submission
   const handleSearch = async (e) => {
     e.preventDefault();
+
+    if (searchTerm.trim() === "") {
+      setSearchError("Please enter a search term");
+      return;
+    }
 
     if (!selectedCategoryId) {
       setSearchError("Please select a category first");
@@ -164,7 +169,7 @@ const HomePage = () => {
           <div className="entities-list">
             {entities.map((entity) => (
               <Link
-                to={`/entities/${entity.id}`}
+                to={`/entity/${entity.id}`}
                 key={entity.id}
                 className="entity-card-link"
               >

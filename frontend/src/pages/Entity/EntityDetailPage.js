@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AuthContext } from "../../context/AuthContext";
-import request from "../../utils/request";
+import { request } from "../../utils/request";
 import CommentList from "../../components/comments/CommentList";
 import ReviewForm from "../../components/comments/ReviewForm";
 import "./EntityDetailPage.scss";
@@ -49,8 +49,9 @@ const EntityDetailPage = () => {
       try {
         const response = await request.getCommentThreads({ entity_id: id });
 
-        if (response.data && response.data.code === 0) {
-          setComments(response.data.data.comment_threads || []);
+        if (response.data?.code === 0) {
+          const data = response.data.data;
+          setComments(data.comment_threads || []);
         } else {
           throw new Error("Failed to fetch comments");
         }
@@ -74,7 +75,7 @@ const EntityDetailPage = () => {
   const getCategoryName = (categoryId) => {
     if (!categories || categories.length === 0) return "Unknown Category";
 
-    const category = categories.find((cat) => cat.id === categoryId);
+    const category = categories.find((cat) => cat.id === entity.category_id);
     return category ? category.name : "Unknown Category";
   };
 
@@ -143,12 +144,16 @@ const EntityDetailPage = () => {
         ) : (
           <div className="login-prompt">
             <p>Please log in to leave a review.</p>
+            <button onClick={() => (window.location.href = "/login")}>
+              Go to Login
+            </button>
           </div>
         )}
 
         <CommentList
           comments={comments}
           onVoteSuccess={handleCommentSubmitted}
+          entityId={id}
         />
       </div>
     </div>

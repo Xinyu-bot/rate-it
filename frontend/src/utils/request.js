@@ -23,50 +23,90 @@ api.interceptors.request.use(
   }
 );
 
+// Generic request function
+const makeRequest = async (method, url, data = null, params = null) => {
+  try {
+    const response = await api({
+      method,
+      url,
+      data,
+      params,
+    });
+    return response;
+  } catch (error) {
+    console.error(`Error in ${method.toUpperCase()} ${url}:`, error);
+    throw error;
+  }
+};
+
 // API endpoints
 const request = {
+  // Generic methods
+  get: (url, params) => makeRequest("get", url, null, params),
+  post: (url, data) => makeRequest("post", url, data),
+  put: (url, data) => makeRequest("put", url, data),
+  delete: (url) => makeRequest("delete", url),
+
   // Categories
-  getCategories: () => api.get("/categories"),
+  getCategories: () => makeRequest("get", "/categories"),
 
   // Entities
-  getEntities: (params) => api.get("/entities", { params }),
-  getEntity: (id) => api.get(`/entities/${id}`),
-  createEntity: (data) => api.post("/entities", data),
-  updateEntity: (id, data) => api.put(`/entities/${id}`, data),
-  deleteEntity: (id) => api.delete(`/entities/${id}`),
+  getEntities: (params) => makeRequest("get", "/entities", null, params),
+  getEntity: (id) => makeRequest("get", `/entity/${id}`),
+  createEntity: (data) => makeRequest("post", "/entity", data),
+  updateEntity: (id, data) => makeRequest("put", `/entity/${id}`, data),
+  deleteEntity: (id) => makeRequest("delete", `/entity/${id}`),
 
   // Entity Suggestions
-  getEntitySuggestions: () => api.get("/entity_suggestions"),
-  createEntitySuggestion: (data) => api.post("/entity_suggestions", data),
-  getEntitySuggestion: (id) => api.get(`/entity_suggestions/${id}`),
+  getEntitySuggestions: () => makeRequest("get", "/entity_suggestions"),
+  createEntitySuggestion: (data) =>
+    makeRequest("post", "/entity_suggestions", data),
+  getEntitySuggestion: (id) => makeRequest("get", `/entity_suggestions/${id}`),
   updateEntitySuggestion: (id, data) =>
-    api.put(`/entity_suggestions/${id}`, data),
-  deleteEntitySuggestion: (id) => api.delete(`/entity_suggestions/${id}`),
+    makeRequest("put", `/entity_suggestions/${id}`, data),
+  deleteEntitySuggestion: (id) =>
+    makeRequest("delete", `/entity_suggestions/${id}`),
 
   // User
-  getCurrentUser: () => api.get("/user/me"),
-  updateCurrentUser: (data) => api.put("/user/me", data),
-  getUserProfile: (id) => api.get(`/users/${id}/profile`),
+  getCurrentUser: () => makeRequest("get", "/user/me"),
+  updateCurrentUser: (data) => makeRequest("put", "/user/me", data),
+  getUserProfile: (id) => makeRequest("get", `/users/${id}/profile`),
 
   // Comment Threads
-  getCommentThreads: (params) => api.get("/comment_threads", { params }),
-  createCommentThread: (data) => api.post("/comment_threads", data),
-  getCommentThread: (id) => api.get(`/comment_threads/${id}`),
-  updateCommentThread: (id, data) => api.put(`/comment_threads/${id}`, data),
-  deleteCommentThread: (id) => api.delete(`/comment_threads/${id}`),
+  getCommentThreads: (params) =>
+    makeRequest("get", "/comment_threads", null, params),
+  createCommentThread: (data) => makeRequest("post", "/comment_threads", data),
+  getCommentThread: (id) => makeRequest("get", `/comment_threads/${id}`),
+  updateCommentThread: (id, data) =>
+    makeRequest("put", `/comment_threads/${id}`, data),
+  deleteCommentThread: (id) => makeRequest("delete", `/comment_threads/${id}`),
 
   // Comment Replies
   getCommentReplies: (threadId) =>
-    api.get(`/comment_threads/${threadId}/replies`),
-  getCommentReply: (id) => api.get(`/comment_replies/${id}`),
-  updateCommentReply: (id, data) => api.put(`/comment_replies/${id}`, data),
-  deleteCommentReply: (id) => api.delete(`/comment_replies/${id}`),
+    makeRequest("get", `/comment_threads/${threadId}/replies`),
+  createCommentReply: (threadId, data) =>
+    makeRequest("post", `/comment_threads/${threadId}/replies`, data),
+  getCommentReply: (id) => makeRequest("get", `/comment_replies/${id}`),
+  updateCommentReply: (id, data) =>
+    makeRequest("put", `/comment_replies/${id}`, data),
+  deleteCommentReply: (id) => makeRequest("delete", `/comment_replies/${id}`),
 
   // Votes
   voteCommentThread: (threadId, data) =>
-    api.post(`/votes/comment_thread/${threadId}`, data),
+    makeRequest("post", `/votes/comment_thread/${threadId}`, data),
   removeVoteFromCommentThread: (threadId) =>
-    api.delete(`/votes/comment_thread/${threadId}`),
+    makeRequest("delete", `/votes/comment_thread/${threadId}`),
+
+  // User Activity
+  getUserThreads: (userId) => makeRequest("get", `/users/${userId}/threads`),
+  getUserReplies: (userId) => makeRequest("get", `/users/${userId}/replies`),
+  getUserVotes: (userId, type) =>
+    makeRequest("get", `/users/${userId}/votes`, null, { type }),
+
+  // My Activity
+  getMyThreads: () => makeRequest("get", "/user/me/threads"),
+  getMyReplies: () => makeRequest("get", "/user/me/replies"),
+  getMyVotes: (type) => makeRequest("get", "/user/me/votes", null, { type }),
 };
 
-export default request;
+export { request, api };

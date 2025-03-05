@@ -16,7 +16,7 @@ function App() {
       {/* Define routes for different pages */}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/entities/:id" element={<EntityDetailPage />} />
+        <Route path="/entity/:id" element={<EntityDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/user/me" element={<MyProfilePage />} />

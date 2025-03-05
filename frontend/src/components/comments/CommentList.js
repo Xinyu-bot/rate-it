@@ -2,9 +2,14 @@ import React from "react";
 import CommentItem from "./CommentItem";
 import "./CommentList.scss";
 
-const CommentList = ({ comments, onVoteSuccess }) => {
+const CommentList = ({ comments, onVoteSuccess, entityId }) => {
+  // Filter out replies (they will be shown nested under their parent comments)
+  const parentComments = comments.filter(
+    (comment) => !comment.parent_thread_id
+  );
+
   // Sort comments by creation date (newest first)
-  const sortedComments = [...comments].sort((a, b) => {
+  const sortedComments = [...parentComments].sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
 
@@ -30,6 +35,7 @@ const CommentList = ({ comments, onVoteSuccess }) => {
             key={comment.comment_thread_id}
             comment={comment}
             onVoteSuccess={onVoteSuccess}
+            entityId={entityId}
           />
         ))}
       </div>

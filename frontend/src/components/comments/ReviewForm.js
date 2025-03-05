@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import request from "../../utils/request";
+import { request } from "../../utils/request";
 import StarRating from "./StarRating";
 import "./ReviewForm.scss";
 

@@ -5,20 +5,21 @@ import supabase from "../services/supabaseClient";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  // Initialize from localStorage so we have an immediate value if available.
   const [session, setSession] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [accessToken, setAccessToken] = useState(
+    () => localStorage.getItem("accessToken") || null
+  );
+  const [userId, setUserId] = useState(
+    () => localStorage.getItem("userId") || null
+  );
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-    const storedId = localStorage.getItem("userId");
-    if (storedId) {
-      setUserId(storedId);
-    }
-
+    // Retrieve session from Supabase on app load
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
         setSession(data.session);
-        // If a user is present, extract the access token
         if (data.session?.access_token) {
           setAccessToken(data.session.access_token);
           localStorage.setItem("accessToken", data.session.access_token);
@@ -29,8 +30,10 @@ export function AuthProvider({ children }) {
           localStorage.setItem("userId", idFromSupabase);
         }
       }
+      setAuthLoading(false); // Auth state has been determined
     });
 
+    // Listen for auth state changes
     const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
         setSession(newSession);
@@ -58,18 +61,26 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAuthenticated = !!session?.user;
+
   const logout = async () => {
     await supabase.auth.signOut();
     setSession(null);
     setAccessToken(null);
     setUserId(null);
-    localStorage.removeItem("userId");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
   };
 
   return (
     <AuthContext.Provider
-      value={{ session, accessToken, userId, isAuthenticated, logout }}
+      value={{
+        session,
+        accessToken,
+        userId,
+        isAuthenticated,
+        authLoading,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

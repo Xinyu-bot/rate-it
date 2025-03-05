@@ -1,26 +1,34 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import request from "../../utils/request";
+import { request } from "../../utils/request";
 import StarRating from "./StarRating";
+import ReplyForm from "./ReplyForm";
 import "./CommentItem.scss";
 
-const CommentItem = ({ comment, onVoteSuccess }) => {
+const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
   const { isAuthenticated, userId } = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
   const [voteStatus, setVoteStatus] = useState(null); // 'upvote', 'downvote', or null
   const [voteLoading, setVoteLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showReplies, setShowReplies] = useState(false);
+  const [replies, setReplies] = useState([]);
+  const [repliesLoading, setRepliesLoading] = useState(false);
+  const [repliesError, setRepliesError] = useState(null);
+  const [showReplyForm, setShowReplyForm] = useState(false);
 
   // Fetch user details
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
         setUserLoading(true);
-        const response = await request.getUserProfile(comment.user_id);
+        const response = await request(
+          "/users/" + comment.user_id + "/profile"
+        );
 
-        if (response.data && response.data.code === 0) {
-          setUser(response.data.data);
+        if (response.data?.code === 0) {
+          setUser(response.data.data.user); // FIXME: see if this is the correct way
         }
       } catch (err) {
         console.error("Error fetching user details:", err);
@@ -91,13 +99,65 @@ const CommentItem = ({ comment, onVoteSuccess }) => {
     }
   };
 
+  const fetchReplies = async () => {
+    if (repliesLoading) return;
+
+    setRepliesLoading(true);
+    setRepliesError(null);
+
+    try {
+      const response = await request.getCommentReplies(
+        comment.comment_thread_id
+      );
+
+      if (response.data?.code === 0) {
+        const data = response.data.data;
+        setReplies(data.comment_replies || []);
+      } else {
+        setRepliesError("Failed to load replies");
+      }
+    } catch (err) {
+      console.error("Error fetching replies:", err);
+      setRepliesError("An error occurred while loading replies");
+    } finally {
+      setRepliesLoading(false);
+    }
+  };
+
+  const toggleReplies = () => {
+    if (!showReplies && comment.replies_count > 0 && replies.length === 0) {
+      fetchReplies();
+    }
+    setShowReplies(!showReplies);
+  };
+
+  const handleReplyClick = () => {
+    if (!isAuthenticated) {
+      setError("You must be logged in to reply");
+      return;
+    }
+    setShowReplyForm(!showReplyForm);
+  };
+
+  const handleReplySubmitted = () => {
+    // Refresh replies
+    fetchReplies();
+    // Show replies if they were hidden
+    setShowReplies(true);
+    // Hide the reply form
+    setShowReplyForm(false);
+  };
+
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
-    <div className="comment-item">
+    <div
+      className={`comment-item ${level > 0 ? "reply" : ""}`}
+      style={{ marginLeft: `${level * 20}px` }}
+    >
       <div className="comment-header">
         <div className="user-info">
           {userLoading ? (
@@ -105,7 +165,7 @@ const CommentItem = ({ comment, onVoteSuccess }) => {
           ) : (
             <>
               <img
-                src={user?.profile_picture || "/default-avatar.png"}
+                src={user?.profile_picture || "/images/default-avatar.png"}
                 alt={user?.username || "User"}
                 className="avatar"
               />
@@ -116,9 +176,11 @@ const CommentItem = ({ comment, onVoteSuccess }) => {
         <div className="comment-date">{formatDate(comment.created_at)}</div>
       </div>
 
-      <div className="comment-rating">
-        <StarRating rating={comment.rating} readOnly />
-      </div>
+      {comment.rating > 0 && (
+        <div className="comment-rating">
+          <StarRating rating={comment.rating} readOnly />
+        </div>
+      )}
 
       <div className="comment-content">
         <p>{comment.content}</p>
@@ -149,10 +211,74 @@ const CommentItem = ({ comment, onVoteSuccess }) => {
             <span className="vote-icon">👎</span>
             <span className="vote-count">{comment.downvote_count || 0}</span>
           </button>
+
+          <button
+            className="reply-button"
+            onClick={handleReplyClick}
+            aria-label="Reply"
+          >
+            <span className="reply-icon">↩️</span>
+            <span>Reply</span>
+          </button>
+
+          {comment.replies_count > 0 && (
+            <button
+              className={`replies-toggle ${showReplies ? "active" : ""}`}
+              onClick={toggleReplies}
+              aria-label={showReplies ? "Hide replies" : "Show replies"}
+            >
+              <span className="replies-icon">{showReplies ? "▼" : "▶"}</span>
+              <span className="replies-count">
+                {comment.replies_count}{" "}
+                {comment.replies_count === 1 ? "reply" : "replies"}
+              </span>
+            </button>
+          )}
         </div>
 
         {error && <div className="vote-error">{error}</div>}
       </div>
+
+      {showReplyForm && (
+        <ReplyForm
+          threadId={comment.comment_thread_id}
+          entityId={entityId || comment.entity_id}
+          onReplySubmitted={handleReplySubmitted}
+          onCancel={() => setShowReplyForm(false)}
+        />
+      )}
+
+      {showReplies && (
+        <div className="replies-container">
+          {repliesLoading ? (
+            <div className="replies-loading">
+              <div className="loading-spinner small"></div>
+              <p>Loading replies...</p>
+            </div>
+          ) : repliesError ? (
+            <div className="replies-error">
+              <p>{repliesError}</p>
+              <button onClick={fetchReplies}>Try Again</button>
+            </div>
+          ) : replies.length > 0 ? (
+            <div className="replies-list">
+              {replies.map((reply) => (
+                <CommentItem
+                  key={reply.id}
+                  comment={reply}
+                  onVoteSuccess={onVoteSuccess}
+                  level={level + 1}
+                  entityId={entityId || comment.entity_id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="no-replies">
+              <p>No replies yet.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

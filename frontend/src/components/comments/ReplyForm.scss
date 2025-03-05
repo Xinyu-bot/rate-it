@@ -1,0 +1,93 @@
+.reply-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  
+  &.not-authenticated {
+    text-align: center;
+    color: #666;
+    padding: 1.5rem;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    
+    .form-group {
+      margin-bottom: 1rem;
+      
+      textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        font-family: inherit;
+        font-size: 0.95rem;
+        
+        &:focus {
+          outline: none;
+          border-color: #4a90e2;
+          box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+        
+        &:disabled {
+          background-color: #f5f5f5;
+          cursor: not-allowed;
+        }
+      }
+    }
+    
+    .form-error {
+      margin-bottom: 1rem;
+      color: #f5222d;
+      font-size: 0.9rem;
+    }
+    
+    .form-success {
+      margin-bottom: 1rem;
+      color: #52c41a;
+      font-size: 0.9rem;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      
+      button {
+        padding: 0.6rem 1.2rem;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+      
+      .cancel-button {
+        background-color: transparent;
+        border: 1px solid #ddd;
+        color: #666;
+        
+        &:hover:not(:disabled) {
+          background-color: #f5f5f5;
+        }
+      }
+      
+      .submit-button {
+        background-color: #4a90e2;
+        border: none;
+        color: white;
+        
+        &:hover:not(:disabled) {
+          background-color: #3a7bc8;
+        }
+      }
+    }
+  }
+} 
