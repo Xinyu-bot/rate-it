@@ -20,7 +20,12 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setError("You must be logged in to view this page");
+      navigate("/login", {
+        state: {
+          from: `/user/${userId}`,
+          message: "Please log in to view user profiles",
+        },
+      });
       return;
     }
 
@@ -45,7 +50,7 @@ const UserProfilePage = () => {
     if (userId) {
       fetchUserProfile();
     }
-  }, [isAuthenticated, userId]);
+  }, [userId, isAuthenticated, navigate]);
 
   useEffect(() => {
     const fetchActivityData = async () => {
@@ -157,7 +162,7 @@ const UserProfilePage = () => {
       <div className="profile-header">
         <div className="profile-avatar">
           <img
-            src={profile.avatar_url || "/images/default-avatar.png"}
+            src={profile.profile_picture || "/images/default-avatar.png"}
             alt={`${profile.username}'s avatar`}
             onClick={navigateToUserProfile}
           />

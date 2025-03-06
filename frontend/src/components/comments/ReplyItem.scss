@@ -1,61 +1,81 @@
 .reply-item {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  padding: 1.2rem;
-  margin-bottom: 1rem;
-  border-left: 3px solid #4a90e2;
+  background-color: var(--bg-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
   
   .reply-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-sm);
+    
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-xs);
+    }
     
     .user-info {
       display: flex;
       align-items: center;
+      gap: var(--spacing-sm);
       
       .avatar {
         width: 32px;
         height: 32px;
-        border-radius: 50%;
+        border-radius: var(--border-radius-circle);
         object-fit: cover;
-        margin-right: 0.8rem;
         cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         
         &:hover {
           transform: scale(1.05);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          box-shadow: var(--shadow-sm);
+        }
+        
+        &.avatar-placeholder {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: var(--bg-secondary);
+          color: var(--text-light);
+          font-size: 16px;
         }
       }
       
       .username {
         font-weight: 600;
-        color: #333;
+        color: var(--text-primary);
         
         &.clickable {
           cursor: pointer;
-          transition: color 0.2s ease;
+          transition: color var(--transition-fast);
           
           &:hover {
-            color: #4a90e2;
+            color: var(--primary-color);
           }
         }
       }
     }
     
     .reply-date {
-      color: #888;
-      font-size: 0.9rem;
+      color: var(--text-light);
+      font-size: 0.85rem;
     }
   }
   
   .reply-content {
+    margin-bottom: var(--spacing-sm);
+    
     p {
-      line-height: 1.6;
-      color: #444;
+      line-height: 1.5;
+      color: var(--text-secondary);
       margin: 0;
     }
   }

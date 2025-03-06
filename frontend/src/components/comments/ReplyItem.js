@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, memo } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
+import { FaUser } from "react-icons/fa";
 import "./ReplyItem.scss";
 
-const ReplyItem = ({ reply }) => {
+const ReplyItem = memo(({ reply }) => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
 
@@ -36,25 +39,46 @@ const ReplyItem = ({ reply }) => {
   };
 
   const navigateToUserProfile = () => {
+    if (!isAuthenticated) {
+      // Redirect to login page if not authenticated
+      navigate("/login", {
+        state: {
+          from: window.location.pathname,
+          message: "Please log in to view user profiles",
+        },
+      });
+      return;
+    }
+
     if (user && reply.user_id) {
       navigate(`/user/${reply.user_id}`);
     }
   };
 
   return (
-    <div className="reply-item">
+    <div className="reply-item" role="article">
       <div className="reply-header">
         <div className="user-info">
           {userLoading ? (
             <span className="username">Loading user...</span>
           ) : (
             <>
-              <img
-                src={user?.profile_picture || "/images/default-avatar.png"}
-                alt={user?.username || "User"}
-                className="avatar"
-                onClick={navigateToUserProfile}
-              />
+              {user?.profile_picture ? (
+                <img
+                  src={user.profile_picture}
+                  alt={`${user.username}'s avatar`}
+                  className="avatar"
+                  onClick={navigateToUserProfile}
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className="avatar avatar-placeholder"
+                  onClick={navigateToUserProfile}
+                >
+                  <FaUser />
+                </div>
+              )}
               <span
                 className="username clickable"
                 onClick={navigateToUserProfile}
@@ -64,7 +88,12 @@ const ReplyItem = ({ reply }) => {
             </>
           )}
         </div>
-        <div className="reply-date">{formatDate(reply.created_at)}</div>
+        <div
+          className="reply-date"
+          title={new Date(reply.created_at).toLocaleString()}
+        >
+          {formatDate(reply.created_at)}
+        </div>
       </div>
 
       <div className="reply-content">
@@ -72,6 +101,8 @@ const ReplyItem = ({ reply }) => {
       </div>
     </div>
   );
-};
+});
+
+ReplyItem.displayName = "ReplyItem";
 
 export default ReplyItem;

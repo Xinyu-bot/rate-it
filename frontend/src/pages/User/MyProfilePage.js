@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
 import "./MyProfilePage.scss";
@@ -15,6 +15,7 @@ const MyProfilePage = () => {
   const [replies, setReplies] = useState([]);
   const [upvotes, setUpvotes] = useState([]);
   const [downvotes, setDownvotes] = useState([]);
+  const navigate = useNavigate();
 
   const fetchActivityData = useCallback(
     async (tab) => {
@@ -79,8 +80,12 @@ const MyProfilePage = () => {
     }
 
     if (!isAuthenticated) {
-      setLoading(false);
-      setError("You must be logged in to view your profile");
+      navigate("/login", {
+        state: {
+          from: "/user/me",
+          message: "Please log in to view your profile",
+        },
+      });
       return;
     }
 
@@ -101,7 +106,7 @@ const MyProfilePage = () => {
     };
 
     fetchProfile();
-  }, [isAuthenticated, authLoading]);
+  }, [isAuthenticated, authLoading, navigate]);
 
   useEffect(() => {
     if (!profile) return;
@@ -155,7 +160,7 @@ const MyProfilePage = () => {
       <div className="profile-header">
         <div className="profile-avatar">
           <img
-            src={profile.avatar_url || "/images/default-avatar.png"}
+            src={profile.profile_picture || "/images/default-avatar.png"}
             alt={`${profile.username}'s avatar`}
           />
         </div>

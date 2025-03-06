@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
+import { fetchCategoriesSuccess } from "../../store/slices/categoriesSlice";
 import CommentList from "../../components/comments/CommentList";
 import ReviewForm from "../../components/comments/ReviewForm";
 import "./EntityDetailPage.scss";
@@ -10,6 +11,7 @@ import "./EntityDetailPage.scss";
 const EntityDetailPage = () => {
   const { id } = useParams();
   const { isAuthenticated } = useContext(AuthContext);
+  const dispatch = useDispatch();
   const categories = useSelector((state) => state.categories.list);
 
   const [entity, setEntity] = useState(null);
@@ -17,6 +19,32 @@ const EntityDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
+  const [localCategories, setLocalCategories] = useState([]);
+
+  // Fetch categories if not available in Redux
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await request.getCategories();
+
+        if (response.data?.code === 0) {
+          const fetchedCategories = response.data.data.categories || [];
+          setLocalCategories(fetchedCategories);
+
+          // Update Redux store
+          dispatch(fetchCategoriesSuccess(fetchedCategories));
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    if (!categories || categories.length === 0) {
+      fetchCategories();
+    } else {
+      setLocalCategories(categories);
+    }
+  }, [categories, dispatch]);
 
   // Fetch entity details
   useEffect(() => {
@@ -48,7 +76,6 @@ const EntityDetailPage = () => {
     const fetchComments = async () => {
       try {
         const response = await request.getCommentThreads({ entity_id: id });
-
         if (response.data?.code === 0) {
           const data = response.data.data;
           setComments(data.comment_threads || []);
@@ -57,7 +84,6 @@ const EntityDetailPage = () => {
         }
       } catch (err) {
         console.error("Error fetching comments:", err);
-        // We don't set the main error state here to still show the entity details
       }
     };
 
@@ -73,9 +99,19 @@ const EntityDetailPage = () => {
 
   // Find category name
   const getCategoryName = (categoryId) => {
-    if (!categories || categories.length === 0) return "Unknown Category";
+    if (!entity) return "Unknown Category";
 
-    const category = categories.find((cat) => cat.id === entity.category_id);
+    // Use either Redux categories or locally fetched categories
+    const categoriesSource =
+      categories.length > 0 ? categories : localCategories;
+
+    if (!categoriesSource || categoriesSource.length === 0) {
+      return "Loading category...";
+    }
+
+    const category = categoriesSource.find(
+      (cat) => cat.id === entity.category_id
+    );
     return category ? category.name : "Unknown Category";
   };
 
@@ -144,7 +180,13 @@ const EntityDetailPage = () => {
         ) : (
           <div className="login-prompt">
             <p>Please log in to leave a review.</p>
-            <button onClick={() => (window.location.href = "/login")}>
+            <button
+              onClick={() =>
+                (window.location.href =
+                  "/login?redirect=" +
+                  encodeURIComponent(window.location.pathname))
+              }
+            >
               Go to Login
             </button>
           </div>
