@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
-import "./MyProfilePage.scss";
+import "./UserProfilePage.scss";
 
-const MyProfilePage = () => {
-  const { isAuthenticated, authLoading } = useContext(AuthContext);
+const UserProfilePage = () => {
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState("threads");
   const [loading, setLoading] = useState(true);
@@ -15,107 +17,110 @@ const MyProfilePage = () => {
   const [replies, setReplies] = useState([]);
   const [upvotes, setUpvotes] = useState([]);
   const [downvotes, setDownvotes] = useState([]);
-  const navigate = useNavigate();
-
-  const fetchActivityData = useCallback(
-    async (tab) => {
-      if (!profile) return;
-
-      setActivityLoading(true);
-
-      try {
-        let response;
-        switch (tab) {
-          case "threads":
-            response = await request.getMyThreads();
-            break;
-          case "replies":
-            response = await request.getMyReplies();
-            break;
-          case "upvotes":
-            response = await request.getMyVotes("upvote");
-            break;
-          case "downvotes":
-            response = await request.getMyVotes("downvote");
-            break;
-          default:
-            response = request.getMyThreads();
-        }
-
-        let data;
-        if (response.data?.code === 0) {
-          data = response.data.data;
-        } else {
-          console.error(`Failed to fetch ${tab}:`, response.data?.message);
-        }
-
-        switch (tab) {
-          case "threads":
-            setThreads(data.threads);
-            break;
-          case "replies":
-            setReplies(data.replies);
-            break;
-          case "upvotes":
-            setUpvotes(data.upvotes);
-            break;
-          case "downvotes":
-            setDownvotes(data.downvotes);
-            break;
-          default:
-            break;
-        }
-      } catch (err) {
-        console.error(`Error fetching ${tab}:`, err);
-      } finally {
-        setActivityLoading(false);
-      }
-    },
-    [profile]
-  );
 
   useEffect(() => {
-    if (authLoading) {
-      return;
-    }
-
     if (!isAuthenticated) {
       navigate("/login", {
         state: {
-          from: "/user/me",
-          message: "Please log in to view your profile",
+          from: `/user/${userId}`,
+          message: "Please log in to view user profiles",
         },
       });
       return;
     }
 
-    const fetchProfile = async () => {
+    const fetchUserProfile = async () => {
       try {
-        const response = await request.getCurrentUser();
+        setLoading(true);
+        const response = await request.getUserProfile(userId);
+
         if (response.data?.code === 0) {
           setProfile(response.data.data);
         } else {
-          setError(response.message || "Failed to fetch profile");
+          setError(response.message || "Failed to fetch user profile");
         }
       } catch (err) {
-        setError("An error occurred while fetching your profile");
+        setError("An error occurred while fetching the user profile");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, [isAuthenticated, authLoading, navigate]);
+    if (userId) {
+      fetchUserProfile();
+    }
+  }, [userId, isAuthenticated, navigate]);
 
   useEffect(() => {
-    if (!profile) return;
+    const fetchActivityData = async () => {
+      if (!profile) return;
 
-    fetchActivityData(activeTab);
-  }, [profile, activeTab, fetchActivityData]);
+      setActivityLoading(true);
+
+      try {
+        let response;
+        switch (activeTab) {
+          case "threads":
+            response = await request.getUserThreads(userId);
+            break;
+          case "replies":
+            response = await request.getUserReplies(userId);
+            break;
+          case "upvotes":
+            response = await request.getUserVotes(userId, "upvote");
+            break;
+          case "downvotes":
+            response = await request.getUserVotes(userId, "downvote");
+            break;
+          default:
+            response = await request.getUserProfile(userId);
+        }
+
+        if (response.data?.code === 0) {
+          const data = response.data.data;
+
+          switch (activeTab) {
+            case "threads":
+              setThreads(data.threads || []);
+              break;
+            case "replies":
+              setReplies(data.replies || []);
+              break;
+            case "upvotes":
+              setUpvotes(data.upvotes || []);
+              break;
+            case "downvotes":
+              setDownvotes(data.downvotes || []);
+              break;
+            default:
+              break;
+          }
+        } else {
+          console.error(`Failed to fetch ${activeTab}:`, response.message);
+        }
+      } catch (err) {
+        console.error(`Error fetching ${activeTab}:`, err);
+      } finally {
+        setActivityLoading(false);
+      }
+    };
+
+    if (profile) {
+      fetchActivityData();
+    }
+  }, [profile, activeTab, userId]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  const navigateToUserProfile = () => {
+    // This is already the user profile page, but we'll keep the function
+    // for consistency with other components
+    if (profile && profile.id) {
+      navigate(`/user/${profile.id}`);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -125,47 +130,47 @@ const MyProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="my-profile-page loading">
+      <div className="user-profile-page loading">
         <div className="loading-spinner"></div>
-        <p>Loading your profile...</p>
+        <p>Loading user profile...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="my-profile-page error">
+      <div className="user-profile-page error">
         <h2>Error</h2>
         <p>{error}</p>
-        {!isAuthenticated && (
-          <button onClick={() => (window.location.href = "/login")}>
-            Go to Login
-          </button>
-        )}
+        <button onClick={() => navigate(-1)}>Go Back</button>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="my-profile-page not-found">
+      <div className="user-profile-page not-found">
         <h2>Profile Not Found</h2>
-        <p>We couldn't find your profile information.</p>
+        <p>We couldn't find this user's profile information.</p>
+        <button onClick={() => navigate(-1)}>Go Back</button>
       </div>
     );
   }
 
   return (
-    <div className="my-profile-page">
+    <div className="user-profile-page">
       <div className="profile-header">
         <div className="profile-avatar">
           <img
             src={profile.profile_picture || "/images/default-avatar.png"}
             alt={`${profile.username}'s avatar`}
+            onClick={navigateToUserProfile}
           />
         </div>
         <div className="profile-info">
-          <h1 className="clickable">{profile.username}</h1>
+          <h1 className="clickable" onClick={navigateToUserProfile}>
+            {profile.username}
+          </h1>
           <div className="profile-meta">
             <div className="meta-item">
               <span className="meta-label">Member Since</span>
@@ -177,14 +182,7 @@ const MyProfilePage = () => {
               <span className="meta-label">Level</span>
               <span className="meta-value">{profile.level}</span>
             </div>
-            <div className="meta-item">
-              <span className="meta-label">Points</span>
-              <span className="meta-value">{profile.user_point_balance}</span>
-            </div>
-            <div className="meta-item">
-              <span className="meta-label">Role</span>
-              <span className="meta-value">{profile.role}</span>
-            </div>
+            {/* Note: We don't show points for privacy reasons */}
           </div>
         </div>
       </div>
@@ -195,19 +193,19 @@ const MyProfilePage = () => {
             className={`tab-button ${activeTab === "threads" ? "active" : ""}`}
             onClick={() => handleTabChange("threads")}
           >
-            My Threads
+            Threads
           </button>
           <button
             className={`tab-button ${activeTab === "replies" ? "active" : ""}`}
             onClick={() => handleTabChange("replies")}
           >
-            My Replies
+            Replies
           </button>
           <button
-            className={`tab-button ${activeTab === "upvotes" ? "active" : ""}`}
+            className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
             onClick={() => handleTabChange("upvotes")}
           >
-            My Upvotes
+            Upvotes
           </button>
           <button
             className={`tab-button ${
@@ -215,7 +213,7 @@ const MyProfilePage = () => {
             }`}
             onClick={() => handleTabChange("downvotes")}
           >
-            My Downvotes
+            Downvotes
           </button>
         </div>
 
@@ -269,7 +267,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't created any threads yet.</p>
+                      <p>This user hasn't created any threads yet.</p>
                     </div>
                   )}
                 </div>
@@ -287,7 +285,7 @@ const MyProfilePage = () => {
                           <span>
                             In response to{" "}
                             <Link to={`/entity/${reply.entity_id}`}>
-                              Thread #{reply.comment_thread_id}
+                              Thread #{reply.thread_id}
                             </Link>
                           </span>
                           <span>{formatDate(reply.created_at)}</span>
@@ -296,7 +294,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't replied to any threads yet.</p>
+                      <p>This user hasn't replied to any threads yet.</p>
                     </div>
                   )}
                 </div>
@@ -314,7 +312,7 @@ const MyProfilePage = () => {
                         </div>
                         <div className="vote-thread-id">
                           <Link to={`/entity/${vote.entity_id}`}>
-                            Thread at {vote.comment_thread_id}
+                            Thread #{vote.thread_id}
                           </Link>
                         </div>
                         <div className="vote-date">
@@ -324,7 +322,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't upvoted any threads yet.</p>
+                      <p>This user hasn't voted on any threads yet.</p>
                     </div>
                   )}
                 </div>
@@ -342,7 +340,7 @@ const MyProfilePage = () => {
                         </div>
                         <div className="vote-thread-id">
                           <Link to={`/entity/${vote.entity_id}`}>
-                            Thread at {vote.comment_thread_id}
+                            Thread #{vote.thread_id}
                           </Link>
                         </div>
                         <div className="vote-date">
@@ -352,7 +350,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't downvoted any threads yet.</p>
+                      <p>This user hasn't voted on any threads yet.</p>
                     </div>
                   )}
                 </div>
@@ -365,4 +363,4 @@ const MyProfilePage = () => {
   );
 };
 
-export default MyProfilePage;
+export default UserProfilePage;

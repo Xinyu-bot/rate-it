@@ -1,0 +1,309 @@
+{
+    "uuid": "22214a9b-776b-43a2-a66f-e82a49a4b260",
+    "lastMigration": 33,
+    "name": "Rate it mock",
+    "endpointPrefix": "",
+    "latency": 0,
+    "port": 3001,
+    "hostname": "",
+    "folders": [],
+    "routes": [
+        {
+            "uuid": "a9098241-19db-4a06-b291-d5744f3f86e7",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/categories",
+            "responses": [
+                {
+                    "uuid": "ed6a5891-da9d-4d7c-ade5-8ffbae9997aa",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"success\",\r\n  \"data\": {\r\n    \"categories\": [\r\n      {\r\n        \"id\": \"1\",\r\n        \"name\": \"hotel\",\r\n        \"created_at\": \"2023-03-05T02:33:12.000Z\",\r\n        \"updated_at\": \"2023-03-05T02:33:12.000Z\"\r\n      },\r\n      {\r\n        \"id\": \"2\",\r\n        \"name\": \"restaurant\",\r\n        \"created_at\": \"2023-03-05T02:33:12.000Z\",\r\n        \"updated_at\": \"2023-03-05T02:33:12.000Z\"\r\n      }\r\n    ]\r\n  }\r\n}\r\n",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        },
+        {
+            "uuid": "399b5604-522f-47be-a3b5-3e133edefe1a",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/entities",
+            "responses": [
+                {
+                    "uuid": "8414af1b-9759-4f95-a302-0abfe57fc022",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"Success\",\r\n  \"data\": {\r\n    \"entities\": [\r\n      {\r\n        \"id\": 1,\r\n        \"name\": \"Sample Hotel 1\",\r\n        \"slug\": \"Sample Hotel 1\",\r\n        \"category_id\": 1,\r\n        \"description\": \"string\",\r\n        \"created_by\": 0,\r\n        \"created_at\": \"2025-03-05T02:33:00.496Z\",\r\n        \"is_approved\": true\r\n      },\r\n            {\r\n        \"id\": 2,\r\n        \"name\": \"Sample Hotel 2\",\r\n        \"slug\": \"Sample Hotel 2\",\r\n        \"category_id\": 1,\r\n        \"description\": \"string\",\r\n        \"created_by\": 0,\r\n        \"created_at\": \"2025-03-05T02:33:00.496Z\",\r\n        \"is_approved\": true\r\n      }\r\n    ]\r\n  }\r\n}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        },
+        {
+            "uuid": "044a3a56-0d35-4cfe-8f2e-6f98738a484c",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/user/me",
+            "responses": [
+                {
+                    "uuid": "69460ec2-ec47-4f72-b484-3fb31e846d80",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"Success\",\r\n  \"data\": {\r\n    \"id\": 100,\r\n    \"username\": \"string\",\r\n    \"level\": 1,\r\n    \"user_point_balance\": 12345,\r\n    \"role\": 1,\r\n    \"status\": 1,\r\n    \"profile_picture\": \"string\",\r\n    \"created_at\": \"2025-03-05T03:30:11.945Z\",\r\n    \"updated_at\": \"2025-03-05T03:30:11.945Z\"\r\n  }\r\n}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        },
+        {
+            "uuid": "e78de367-0b0e-49f9-99c4-20d3f07fb959",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/entity/:id",
+            "responses": [
+                {
+                    "uuid": "d79dfeb1-27d0-4b1b-91e9-efb39ebcafa9",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"Success\",\r\n  \"data\": {\r\n    \"id\": \"1\",\r\n    \"name\": \"Sample Hotel 1\",\r\n    \"slug\": \"Sample Hotel 1\",\r\n    \"category_id\": 1,\r\n    \"description\": \"This is the sample hotel 1 of category 1 - hotel\",\r\n    \"created_by\": 0,\r\n    \"created_at\": \"2025-03-05T03:56:17.811Z\",\r\n    \"is_approved\": true\r\n  }\r\n}",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        },
+        {
+            "uuid": "e8b37bb6-bb11-4a68-b0fb-7c5d8b40b0ef",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/comment_threads",
+            "responses": [
+                {
+                    "uuid": "2528dc9d-2c87-4448-bacb-8b26a5ef6ada",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"Success\",\r\n  \"data\": {\r\n    \"comment_threads\": [\r\n      {\r\n        \"comment_thread_id\": \"ct-001\",\r\n        \"entity_id\": 101,\r\n        \"user_id\": 1,\r\n        \"rating\": 5,\r\n        \"content\": \"This place is amazing! I had a fantastic experience.\",\r\n        \"created_at\": \"2025-03-05T04:01:42.917Z\",\r\n        \"upvote_count\": 10,\r\n        \"downvote_count\": 1,\r\n        \"replies_count\": 2\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-002\",\r\n        \"entity_id\": 101,\r\n        \"user_id\": 2,\r\n        \"rating\": 4,\r\n        \"content\": \"Really enjoyed the service, will definitely visit again.\",\r\n        \"created_at\": \"2025-03-05T04:05:12.917Z\",\r\n        \"upvote_count\": 7,\r\n        \"downvote_count\": 0,\r\n        \"replies_count\": 1\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-003\",\r\n        \"entity_id\": 102,\r\n        \"user_id\": 3,\r\n        \"rating\": 3,\r\n        \"content\": \"It was okay, nothing exceptional but not bad either.\",\r\n        \"created_at\": \"2025-03-05T04:10:42.917Z\",\r\n        \"upvote_count\": 5,\r\n        \"downvote_count\": 2,\r\n        \"replies_count\": 0\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-004\",\r\n        \"entity_id\": 103,\r\n        \"user_id\": 4,\r\n        \"rating\": 2,\r\n        \"content\": \"I had a poor experience with the customer service.\",\r\n        \"created_at\": \"2025-03-05T04:15:42.917Z\",\r\n        \"upvote_count\": 3,\r\n        \"downvote_count\": 4,\r\n        \"replies_count\": 0\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-005\",\r\n        \"entity_id\": 104,\r\n        \"user_id\": 5,\r\n        \"rating\": 5,\r\n        \"content\": \"Highly recommended! Excellent ambiance and top-notch food.\",\r\n        \"created_at\": \"2025-03-05T04:20:42.917Z\",\r\n        \"upvote_count\": 12,\r\n        \"downvote_count\": 0,\r\n        \"replies_count\": 0\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-006\",\r\n        \"entity_id\": 101,\r\n        \"user_id\": 6,\r\n        \"rating\": 4,\r\n        \"content\": \"Good value for money and a pleasant experience overall.\",\r\n        \"created_at\": \"2025-03-05T04:25:42.917Z\",\r\n        \"upvote_count\": 8,\r\n        \"downvote_count\": 1,\r\n        \"replies_count\": 5\r\n      }\r\n    ]\r\n  }\r\n}\r\n",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        },
+        {
+            "uuid": "3e2768aa-bef6-4d6e-a9d1-839a92a45afe",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/user/me/threads",
+            "responses": [
+                {
+                    "uuid": "5c2dc28f-f562-4827-8da3-08f02741c4bb",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"Success\",\r\n  \"data\": {\r\n    \"threads\": [\r\n      {\r\n        \"comment_thread_id\": \"ct-001\",\r\n        \"entity_id\": 1,\r\n        \"user_id\": 100,\r\n        \"rating\": 5,\r\n        \"content\": \"Excellent service and ambiance!\",\r\n        \"created_at\": \"2025-03-05T05:15:08.471Z\",\r\n        \"upvote_count\": 12,\r\n        \"downvote_count\": 0,\r\n        \"replies_count\": 3\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-002\",\r\n        \"entity_id\": 102,\r\n        \"user_id\": 101,\r\n        \"rating\": 4,\r\n        \"content\": \"Great experience, though there’s room for improvement.\",\r\n        \"created_at\": \"2025-03-05T06:20:30.000Z\",\r\n        \"upvote_count\": 8,\r\n        \"downvote_count\": 1,\r\n        \"replies_count\": 2\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-003\",\r\n        \"entity_id\": 103,\r\n        \"user_id\": 102,\r\n        \"rating\": 3,\r\n        \"content\": \"An average visit. Nothing particularly memorable.\",\r\n        \"created_at\": \"2025-03-05T07:10:15.000Z\",\r\n        \"upvote_count\": 4,\r\n        \"downvote_count\": 2,\r\n        \"replies_count\": 0\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-004\",\r\n        \"entity_id\": 104,\r\n        \"user_id\": 103,\r\n        \"rating\": 2,\r\n        \"content\": \"I wasn’t satisfied with the customer service.\",\r\n        \"created_at\": \"2025-03-05T08:05:50.000Z\",\r\n        \"upvote_count\": 2,\r\n        \"downvote_count\": 5,\r\n        \"replies_count\": 1\r\n      },\r\n      {\r\n        \"comment_thread_id\": \"ct-005\",\r\n        \"entity_id\": 105,\r\n        \"user_id\": 104,\r\n        \"rating\": 4,\r\n        \"content\": \"Overall a good experience with minor issues.\",\r\n        \"created_at\": \"2025-03-05T09:00:00.000Z\",\r\n        \"upvote_count\": 10,\r\n        \"downvote_count\": 0,\r\n        \"replies_count\": 4\r\n      }\r\n    ]\r\n  }\r\n}\r\n",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        },
+        {
+            "uuid": "cd0400b5-b7fa-4852-bdda-d59496336a3d",
+            "type": "http",
+            "documentation": "",
+            "method": "get",
+            "endpoint": "api/comment_threads/:id/replies",
+            "responses": [
+                {
+                    "uuid": "e510ef94-d3fe-404a-9d1b-f3636d8dd3ef",
+                    "body": "{\r\n  \"code\": 0,\r\n  \"msg\": \"Success\",\r\n  \"data\": {\r\n    \"comment_replies\": [\r\n      {\r\n        \"comment_reply_id\": \"cr-001\",\r\n        \"comment_thread_id\": \"ct-001\",\r\n        \"parent_reply_id\": \"\",\r\n        \"user_id\": 10,\r\n        \"content\": \"I completely agree with your point!\",\r\n        \"created_at\": \"2025-03-05T05:46:26.552Z\"\r\n      },\r\n      {\r\n        \"comment_reply_id\": \"cr-002\",\r\n        \"comment_thread_id\": \"ct-001\",\r\n        \"parent_reply_id\": \"cr-001\",\r\n        \"user_id\": 11,\r\n        \"content\": \"That's interesting, but I see it a bit differently.\",\r\n        \"created_at\": \"2025-03-05T06:15:10.000Z\"\r\n      },\r\n      {\r\n        \"comment_reply_id\": \"cr-003\",\r\n        \"comment_thread_id\": \"ct-002\",\r\n        \"parent_reply_id\": \"\",\r\n        \"user_id\": 12,\r\n        \"content\": \"Could you provide more details on that?\",\r\n        \"created_at\": \"2025-03-05T07:20:45.000Z\"\r\n      },\r\n      {\r\n        \"comment_reply_id\": \"cr-004\",\r\n        \"comment_thread_id\": \"ct-003\",\r\n        \"parent_reply_id\": \"\",\r\n        \"user_id\": 13,\r\n        \"content\": \"I think the original post missed an important point.\",\r\n        \"created_at\": \"2025-03-05T08:30:00.000Z\"\r\n      },\r\n      {\r\n        \"comment_reply_id\": \"cr-005\",\r\n        \"comment_thread_id\": \"ct-003\",\r\n        \"parent_reply_id\": \"cr-004\",\r\n        \"user_id\": 14,\r\n        \"content\": \"Actually, I believe the point was well-made if you consider the context.\",\r\n        \"created_at\": \"2025-03-05T09:05:30.000Z\"\r\n      }\r\n    ]\r\n  }\r\n}\r\n",
+                    "latency": 0,
+                    "statusCode": 200,
+                    "label": "",
+                    "headers": [],
+                    "bodyType": "INLINE",
+                    "filePath": "",
+                    "databucketID": "",
+                    "sendFileAsBody": false,
+                    "rules": [],
+                    "rulesOperator": "OR",
+                    "disableTemplating": false,
+                    "fallbackTo404": false,
+                    "default": true,
+                    "crudKey": "id",
+                    "callbacks": []
+                }
+            ],
+            "responseMode": null,
+            "streamingMode": null,
+            "streamingInterval": 0
+        }
+    ],
+    "rootChildren": [
+        {
+            "type": "route",
+            "uuid": "a9098241-19db-4a06-b291-d5744f3f86e7"
+        },
+        {
+            "type": "route",
+            "uuid": "399b5604-522f-47be-a3b5-3e133edefe1a"
+        },
+        {
+            "type": "route",
+            "uuid": "044a3a56-0d35-4cfe-8f2e-6f98738a484c"
+        },
+        {
+            "type": "route",
+            "uuid": "e78de367-0b0e-49f9-99c4-20d3f07fb959"
+        },
+        {
+            "type": "route",
+            "uuid": "e8b37bb6-bb11-4a68-b0fb-7c5d8b40b0ef"
+        },
+        {
+            "type": "route",
+            "uuid": "3e2768aa-bef6-4d6e-a9d1-839a92a45afe"
+        },
+        {
+            "type": "route",
+            "uuid": "cd0400b5-b7fa-4852-bdda-d59496336a3d"
+        }
+    ],
+    "proxyMode": false,
+    "proxyHost": "",
+    "proxyRemovePrefix": false,
+    "tlsOptions": {
+        "enabled": false,
+        "type": "CERT",
+        "pfxPath": "",
+        "certPath": "",
+        "keyPath": "",
+        "caPath": "",
+        "passphrase": ""
+    },
+    "cors": true,
+    "headers": [
+        {
+            "key": "Content-Type",
+            "value": "application/json"
+        },
+        {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+        },
+        {
+            "key": "Access-Control-Allow-Methods",
+            "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+        },
+        {
+            "key": "Access-Control-Allow-Headers",
+            "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+        }
+    ],
+    "proxyReqHeaders": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "proxyResHeaders": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "data": [],
+    "callbacks": []
+}

@@ -1,12 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import ChatPage from "./pages/ChatPage";
-import LoginPage from "./pages/User/LoginPage";
-import SignupPage from "./pages/User/SignupPage";
+import HomePage from "./pages/Home/HomePage";
+import EntityDetailPage from "./pages/Entity/EntityDetailPage";
+import LoginPage from "./pages/Auth/LoginPage";
+import SignupPage from "./pages/Auth/SignupPage";
 import MyProfilePage from "./pages/User/MyProfilePage";
-import WeatherForecast from "./pages/WeatherForecast/WeatherForecast";
-import AuthorizedWeatherForecast from "./pages/WeatherForecast/AuthorizedWeatherForecast";
+import UserProfilePage from "./pages/User/UserProfilePage";
 
 function App() {
   return (
@@ -16,15 +16,12 @@ function App() {
 
       {/* Define routes for different pages */}
       <Routes>
-        <Route path="/" element={<ChatPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/entity/:id" element={<EntityDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/weather" element={<WeatherForecast />} />
-        <Route
-          path="/authorized-forecast"
-          element={<AuthorizedWeatherForecast />}
-        />
         <Route path="/user/me" element={<MyProfilePage />} />
+        <Route path="/user/:userId" element={<UserProfilePage />} />
       </Routes>
     </Router>
   );
