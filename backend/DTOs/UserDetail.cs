@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace backend.DTOs
 {
-    public class UserDetailDto
+    public class UserDetailDto_
     {
         [JsonPropertyName("user_id")]
         public Guid UserId { get; set; }
