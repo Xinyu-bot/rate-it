@@ -3,7 +3,7 @@ import CommentItem from "./CommentItem";
 import "./CommentList.scss";
 
 const CommentList = ({ comments, onVoteSuccess, entityId }) => {
-  // Filter out replies (they will be shown nested under their parent comments)
+  // Filter out replies (they will be shown under their parent threads)
   const parentComments = comments.filter(
     (comment) => !comment.parent_thread_id
   );
@@ -32,7 +32,7 @@ const CommentList = ({ comments, onVoteSuccess, entityId }) => {
       <div className="comments">
         {sortedComments.map((comment) => (
           <CommentItem
-            key={comment.comment_thread_id}
+            key={comment.comment_thread_id || comment.id}
             comment={comment}
             onVoteSuccess={onVoteSuccess}
             entityId={entityId}

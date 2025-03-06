@@ -42,10 +42,10 @@ const makeRequest = async (method, url, data = null, params = null) => {
 // API endpoints
 const request = {
   // Generic methods
-  get: (url, params) => makeRequest("get", url, null, params),
-  post: (url, data) => makeRequest("post", url, data),
-  put: (url, data) => makeRequest("put", url, data),
-  delete: (url) => makeRequest("delete", url),
+  // get: (url, params) => makeRequest("get", url, null, params),
+  // post: (url, data) => makeRequest("post", url, data),
+  // put: (url, data) => makeRequest("put", url, data),
+  // delete: (url) => makeRequest("delete", url),
 
   // Categories
   getCategories: () => makeRequest("get", "/categories"),
@@ -70,7 +70,7 @@ const request = {
   // User
   getCurrentUser: () => makeRequest("get", "/user/me"),
   updateCurrentUser: (data) => makeRequest("put", "/user/me", data),
-  getUserProfile: (id) => makeRequest("get", `/users/${id}/profile`),
+  getUserProfile: (id) => makeRequest("get", `/user/${id}/profile`),
 
   // Comment Threads
   getCommentThreads: (params) =>
@@ -101,12 +101,12 @@ const request = {
   getUserThreads: (userId) => makeRequest("get", `/users/${userId}/threads`),
   getUserReplies: (userId) => makeRequest("get", `/users/${userId}/replies`),
   getUserVotes: (userId, type) =>
-    makeRequest("get", `/users/${userId}/votes`, null, { type }),
+    makeRequest("get", `/users/${userId}/votes?type=${type}`),
 
   // My Activity
   getMyThreads: () => makeRequest("get", "/user/me/threads"),
   getMyReplies: () => makeRequest("get", "/user/me/replies"),
-  getMyVotes: (type) => makeRequest("get", "/user/me/votes", null, { type }),
+  getMyVotes: (type) => makeRequest("get", `/user/me/votes?type=${type}`),
 };
 
-export { request, api };
+export { request };

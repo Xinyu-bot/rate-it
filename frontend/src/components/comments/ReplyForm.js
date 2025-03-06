@@ -33,7 +33,7 @@ const ReplyForm = ({ threadId, entityId, onReplySubmitted, onCancel }) => {
 
     try {
       const replyData = {
-        parent_thread_id: threadId,
+        thread_id: threadId,
         entity_id: entityId,
         user_id: userId,
         content: content.trim(),
@@ -56,7 +56,7 @@ const ReplyForm = ({ threadId, entityId, onReplySubmitted, onCancel }) => {
           if (onCancel) onCancel();
         }, 3000);
       } else {
-        throw new Error(response.message || "Failed to submit reply");
+        throw new Error(response.data?.msg || "Failed to submit reply");
       }
     } catch (err) {
       console.error("Error submitting reply:", err);

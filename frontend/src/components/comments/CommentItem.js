@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
 import StarRating from "./StarRating";
 import ReplyForm from "./ReplyForm";
+import ReplyItem from "./ReplyItem";
 import "./CommentItem.scss";
 
-const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
+const CommentItem = ({ comment, onVoteSuccess, entityId }) => {
+  const navigate = useNavigate();
   const { isAuthenticated, userId } = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
@@ -23,12 +26,10 @@ const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
     const fetchUserDetails = async () => {
       try {
         setUserLoading(true);
-        const response = await request(
-          "/users/" + comment.user_id + "/profile"
-        );
+        const response = await request.getUserProfile(comment.user_id);
 
         if (response.data?.code === 0) {
-          setUser(response.data.data.user); // FIXME: see if this is the correct way
+          setUser(response.data.data);
         }
       } catch (err) {
         console.error("Error fetching user details:", err);
@@ -111,8 +112,7 @@ const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
       );
 
       if (response.data?.code === 0) {
-        const data = response.data.data;
-        setReplies(data.comment_replies || []);
+        setReplies(response.data.data.comment_replies || []);
       } else {
         setRepliesError("Failed to load replies");
       }
@@ -148,16 +148,19 @@ const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
     setShowReplyForm(false);
   };
 
+  const navigateToUserProfile = () => {
+    if (user && comment.user_id) {
+      navigate(`/user/${comment.user_id}`);
+    }
+  };
+
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
-    <div
-      className={`comment-item ${level > 0 ? "reply" : ""}`}
-      style={{ marginLeft: `${level * 20}px` }}
-    >
+    <div className="comment-item">
       <div className="comment-header">
         <div className="user-info">
           {userLoading ? (
@@ -168,8 +171,14 @@ const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
                 src={user?.profile_picture || "/images/default-avatar.png"}
                 alt={user?.username || "User"}
                 className="avatar"
+                onClick={navigateToUserProfile}
               />
-              <span className="username">{user?.username || "Anonymous"}</span>
+              <span
+                className="username clickable"
+                onClick={navigateToUserProfile}
+              >
+                {user?.username || "Anonymous"}
+              </span>
             </>
           )}
         </div>
@@ -263,13 +272,7 @@ const CommentItem = ({ comment, onVoteSuccess, level = 0, entityId }) => {
           ) : replies.length > 0 ? (
             <div className="replies-list">
               {replies.map((reply) => (
-                <CommentItem
-                  key={reply.id}
-                  comment={reply}
-                  onVoteSuccess={onVoteSuccess}
-                  level={level + 1}
-                  entityId={entityId || comment.entity_id}
-                />
+                <ReplyItem key={reply.id} reply={reply} />
               ))}
             </div>
           ) : (

@@ -6,6 +6,7 @@ import EntityDetailPage from "./pages/Entity/EntityDetailPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import SignupPage from "./pages/Auth/SignupPage";
 import MyProfilePage from "./pages/User/MyProfilePage";
+import UserProfilePage from "./pages/User/UserProfilePage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/user/me" element={<MyProfilePage />} />
+        <Route path="/user/:userId" element={<UserProfilePage />} />
       </Routes>
     </Router>
   );
