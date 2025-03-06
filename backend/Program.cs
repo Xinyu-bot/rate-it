@@ -55,11 +55,9 @@ builder.Services.AddCors(options =>
 });
 
 // Register repositories
-builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Register services
-builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 // Configure JWT authentication
