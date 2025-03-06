@@ -10,7 +10,7 @@ function SignupPage() {
     e.preventDefault();
     setStatus("");
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: formState.email,
       password: formState.password,
     });

@@ -41,12 +41,10 @@ function LoginPage() {
     e.preventDefault();
     try {
       setError("");
-      const { data, error: supaError } = await supabase.auth.signInWithPassword(
-        {
-          email: formState.email,
-          password: formState.password,
-        }
-      );
+      const { error: supaError } = await supabase.auth.signInWithPassword({
+        email: formState.email,
+        password: formState.password,
+      });
       if (supaError) {
         throw supaError;
       }
