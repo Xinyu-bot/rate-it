@@ -45,7 +45,7 @@ const UserProfilePage = () => {
     if (userId) {
       fetchUserProfile();
     }
-  }, [userId]);
+  }, [isAuthenticated, userId]);
 
   useEffect(() => {
     const fetchActivityData = async () => {
