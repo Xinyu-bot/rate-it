@@ -55,12 +55,20 @@ builder.Services.AddCors(options =>
 });
 
 // Register repositories
-builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICategoryRepository, MockCategoryRepository>();
+builder.Services.AddScoped<IEntityRepository, MockEntityRepository>();
+builder.Services.AddScoped<ICommentThreadRepository, MockCommentThreadRepository>();
+builder.Services.AddScoped<ICommentReplyRepository, MockCommentReplyRepository>();
+builder.Services.AddScoped<IVoteRepository, MockVoteRepository>();
 
 // Register services
-builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IEntityService, EntityService>();
+builder.Services.AddScoped<ICommentThreadService, CommentThreadService>();
+builder.Services.AddScoped<ICommentReplyService, CommentReplyService>();
+builder.Services.AddScoped<IVoteService, VoteService>();
 
 // Configure JWT authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
