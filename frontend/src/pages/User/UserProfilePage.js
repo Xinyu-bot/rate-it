@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
 import "./UserProfilePage.scss";
@@ -107,12 +107,6 @@ const UserProfilePage = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-  };
-
-  const navigateToUserProfile = () => {
-    if (profile && profile.id) {
-      navigate(`/user/${profile.id}`);
-    }
   };
 
   const formatDate = (dateString) => {
