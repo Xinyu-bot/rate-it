@@ -51,16 +51,32 @@ const MyProfilePage = () => {
 
         switch (tab) {
           case "threads":
-            setThreads(data.threads);
+            if (data.threads) {
+              setThreads(data.threads);
+            } else {
+              setThreads([]);
+            }
             break;
           case "replies":
-            setReplies(data.replies);
+            if (data.replies) {
+              setReplies(data.replies);
+            } else {
+              setReplies([]);
+            }
             break;
           case "upvotes":
-            setUpvotes(data.upvotes);
+            if (data.votes) {
+              setUpvotes(data.votes);
+            } else {
+              setUpvotes([]);
+            }
             break;
           case "downvotes":
-            setDownvotes(data.downvotes);
+            if (data.votes) {
+              setDownvotes(data.votes);
+            } else {
+              setDownvotes([]);
+            }
             break;
           default:
             break;
@@ -296,7 +312,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't replied to any threads yet.</p>
+                      <p>You haven't replied to any replies yet.</p>
                     </div>
                   )}
                 </div>
@@ -324,7 +340,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't upvoted any threads yet.</p>
+                      <p>You haven't upvoted any upvotes yet.</p>
                     </div>
                   )}
                 </div>
@@ -352,7 +368,7 @@ const MyProfilePage = () => {
                     ))
                   ) : (
                     <div className="empty-state">
-                      <p>You haven't downvoted any threads yet.</p>
+                      <p>You haven't downvoted any downvotes yet.</p>
                     </div>
                   )}
                 </div>
