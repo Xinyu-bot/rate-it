@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
@@ -9,7 +9,10 @@ import ReviewForm from "../../components/comments/ReviewForm";
 import "./EntityDetailPage.scss";
 
 const EntityDetailPage = () => {
-  const { id } = useParams();
+  // Extract the full UUID from the URL path directly
+  const location = useLocation();
+  const entityId = location.pathname.split("/entity/")[1];
+
   const { isAuthenticated } = useContext(AuthContext);
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.categories.list);
@@ -28,18 +31,16 @@ const EntityDetailPage = () => {
         const response = await request.getCategories();
 
         if (response.data?.code === 0) {
-          const fetchedCategories = response.data.data.categories || [];
-          setLocalCategories(fetchedCategories);
-
-          // Update Redux store
-          dispatch(fetchCategoriesSuccess(fetchedCategories));
+          const categoriesData = response.data.data.categories;
+          setLocalCategories(categoriesData);
+          dispatch(fetchCategoriesSuccess(categoriesData));
         }
       } catch (err) {
         console.error("Error fetching categories:", err);
       }
     };
 
-    if (!categories || categories.length === 0) {
+    if (categories.length === 0) {
       fetchCategories();
     } else {
       setLocalCategories(categories);
@@ -51,73 +52,75 @@ const EntityDetailPage = () => {
     const fetchEntityDetails = async () => {
       try {
         setLoading(true);
-        const response = await request.getEntity(id);
+        setError(null);
 
-        if (response.data && response.data.code === 0) {
+        if (!entityId) {
+          throw new Error("Invalid entity ID");
+        }
+
+        const response = await request.getEntity(entityId);
+
+        if (response.data?.code === 0) {
           setEntity(response.data.data);
         } else {
           throw new Error("Failed to fetch entity details");
         }
       } catch (err) {
         console.error("Error fetching entity details:", err);
-        setError("Failed to load entity details. Please try again later.");
+        setError(err.message || "Failed to fetch entity details");
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchEntityDetails();
-    }
-  }, [id]);
+    fetchEntityDetails();
+  }, [entityId]);
 
   // Fetch comments for this entity
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await request.getCommentThreads({ entity_id: id });
+        if (!entityId) return;
+
+        const response = await request.getCommentThreads({
+          entity_id: entityId,
+        });
+
         if (response.data?.code === 0) {
-          const data = response.data.data;
-          setComments(data.comment_threads || []);
-        } else {
-          throw new Error("Failed to fetch comments");
+          setComments(response.data.data.comment_threads || []);
         }
       } catch (err) {
         console.error("Error fetching comments:", err);
       }
     };
 
-    if (id && !loading) {
-      fetchComments();
-    }
+    fetchComments();
+  }, [entityId, refreshComments]);
 
-    // Reset the refresh flag
-    if (refreshComments) {
-      setRefreshComments(false);
-    }
-  }, [id, loading, refreshComments]);
-
-  // Find category name
+  // Get category name from ID
   const getCategoryName = (categoryId) => {
-    if (!entity) return "Unknown Category";
+    // First try to get from Redux store
+    const category = categories.find((cat) => cat.id === categoryId);
 
-    // Use either Redux categories or locally fetched categories
-    const categoriesSource =
-      categories.length > 0 ? categories : localCategories;
-
-    if (!categoriesSource || categoriesSource.length === 0) {
-      return "Loading category...";
+    // If not found in Redux, try from local state
+    if (!category && localCategories.length > 0) {
+      const localCategory = localCategories.find(
+        (cat) => cat.id === categoryId
+      );
+      return localCategory ? localCategory.name : "Unknown Category";
     }
 
-    const category = categoriesSource.find(
-      (cat) => cat.id === entity.category_id
-    );
     return category ? category.name : "Unknown Category";
   };
 
-  // Handle successful comment submission
+  // Handle comment submission success
   const handleCommentSubmitted = () => {
-    setRefreshComments(true);
+    setRefreshComments((prev) => !prev);
+  };
+
+  // Handle vote success
+  const handleVoteSuccess = () => {
+    setRefreshComments((prev) => !prev);
   };
 
   if (loading) {
@@ -134,7 +137,7 @@ const EntityDetailPage = () => {
       <div className="entity-detail-page error">
         <h2>Error</h2>
         <p>{error}</p>
-        <button onClick={() => window.history.back()}>Go Back</button>
+        <button onClick={() => window.location.reload()}>Try Again</button>
       </div>
     );
   }
@@ -144,7 +147,6 @@ const EntityDetailPage = () => {
       <div className="entity-detail-page not-found">
         <h2>Entity Not Found</h2>
         <p>The entity you're looking for doesn't exist or has been removed.</p>
-        <button onClick={() => window.history.back()}>Go Back</button>
       </div>
     );
   }
@@ -154,48 +156,74 @@ const EntityDetailPage = () => {
       <div className="entity-header">
         <h1>{entity.name}</h1>
         <div className="entity-category">
-          Category: {getCategoryName(entity.category_id)}
+          <span className="category-label">Category:</span>
+          <span className="category-value">
+            {getCategoryName(entity.category_id)}
+          </span>
         </div>
       </div>
 
       <div className="entity-content">
         <div className="entity-description">
           <h2>Description</h2>
-          <p>{entity.description}</p>
+          <p>{entity.description || "No description available."}</p>
         </div>
 
-        <div className="entity-meta">
-          <p>Created: {new Date(entity.created_at).toLocaleDateString()}</p>
+        <div className="entity-details">
+          <h2>Details</h2>
+          <div className="detail-item">
+            <span className="detail-label">Address:</span>
+            <span className="detail-value">
+              {entity.address || "Not specified"}
+            </span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">Contact:</span>
+            <span className="detail-value">
+              {entity.contact || "Not specified"}
+            </span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">Website:</span>
+            {entity.website ? (
+              <a
+                href={entity.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="detail-value website"
+              >
+                {entity.website}
+              </a>
+            ) : (
+              <span className="detail-value">Not specified</span>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="entity-reviews">
         <h2>Reviews</h2>
-
         {isAuthenticated ? (
           <ReviewForm
-            entityId={id}
-            onCommentSubmitted={handleCommentSubmitted}
+            entityId={entityId}
+            onReviewSubmitted={handleCommentSubmitted}
           />
         ) : (
           <div className="login-prompt">
             <p>Please log in to leave a review.</p>
-            <button
-              onClick={() =>
-                (window.location.href =
-                  "/login?redirect=" +
-                  encodeURIComponent(window.location.pathname))
-              }
+            <a
+              href={`/login?redirect=/entity/${entityId}`}
+              className="login-button"
             >
-              Go to Login
-            </button>
+              Log In
+            </a>
           </div>
         )}
 
         <CommentList
           comments={comments}
-          onVoteSuccess={handleCommentSubmitted}
-          entityId={id}
+          onVoteSuccess={handleVoteSuccess}
+          entityId={entityId}
         />
       </div>
     </div>

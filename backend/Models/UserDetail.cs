@@ -13,6 +13,9 @@ namespace backend.Models
         [Column("user_name")]
         public required string UserName { get; set; }
 
+        [Column("profile_picture")]
+        public string ProfilePicture { get; set; } = string.Empty;
+
         [Column("user_points_balance")]
         public long UserPointsBalance { get; set; } // default is 0 points
 

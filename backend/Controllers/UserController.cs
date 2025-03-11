@@ -41,5 +41,33 @@ namespace backend.Controllers
                 return Unauthorized(ex.Message);
             }
         }
+    
+        // /api/user/55fdcb53-96a6-4044-a4f3-063bffc5d764/profile
+        [HttpGet("{userId}/profile")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Response<UserDetailDto>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetUserProfile(Guid userId)
+        {
+            try
+            {
+                // Fetch the user details from the service
+                var userDetail = await _userService.GetUserAsync(userId);
+
+                // Map the UserDetail model to a UserDetailDto
+                var userDetailDto = new UserDetailDto
+                {
+                    UserId = userDetail.UserId,
+                    UserName = userDetail.UserName,
+                    ProfilePicture = userDetail.ProfilePicture
+                };
+                var ret = new Response<UserDetailDto>(0, "Success", userDetailDto);
+                return Ok(ret);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
     }
 }

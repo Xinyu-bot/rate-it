@@ -38,8 +38,9 @@ const ReviewForm = ({ entityId, onCommentSubmitted }) => {
     setError(null);
 
     try {
+      console.log("entityId", entityId);
       const commentData = {
-        entity_id: parseInt(entityId),
+        entity_id: entityId,
         user_id: userId,
         rating,
         content: content.trim(),
