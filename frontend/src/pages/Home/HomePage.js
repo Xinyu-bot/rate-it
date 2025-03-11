@@ -62,7 +62,8 @@ const HomePage = () => {
 
   // Handle category selection
   const handleCategoryChange = (e) => {
-    dispatch(setSelectedCategory(parseInt(e.target.value)));
+    // The category ID is a UUID string, so we don't need to parse it as an integer
+    dispatch(setSelectedCategory(e.target.value));
   };
 
   // Handle search input change

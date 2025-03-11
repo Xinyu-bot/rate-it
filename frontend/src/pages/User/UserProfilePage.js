@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { request } from "../../utils/request";
 import "./UserProfilePage.scss";
 
 const UserProfilePage = () => {
-  const { userId } = useParams();
+  // Extract the full UUID from the URL path directly
+  const location = useLocation();
+  const userId = location.pathname.split("/user/")[1];
+
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
@@ -32,72 +35,65 @@ const UserProfilePage = () => {
     const fetchUserProfile = async () => {
       try {
         setLoading(true);
+
+        if (!userId) {
+          throw new Error("Invalid user ID");
+        }
+
         const response = await request.getUserProfile(userId);
 
         if (response.data?.code === 0) {
           setProfile(response.data.data);
         } else {
-          setError(response.message || "Failed to fetch user profile");
+          throw new Error("Failed to fetch user profile");
         }
       } catch (err) {
-        setError("An error occurred while fetching the user profile");
-        console.error(err);
+        console.error("Error fetching user profile:", err);
+        setError(err.message || "Failed to fetch user profile");
       } finally {
         setLoading(false);
       }
     };
 
-    if (userId) {
-      fetchUserProfile();
-    }
+    fetchUserProfile();
   }, [userId, isAuthenticated, navigate]);
 
   useEffect(() => {
     const fetchActivityData = async () => {
-      if (!profile) return;
+      if (!isAuthenticated || !userId || !profile) return;
 
       setActivityLoading(true);
+      let response;
 
       try {
-        let response;
         switch (activeTab) {
           case "threads":
             response = await request.getUserThreads(userId);
+            if (response.data?.code === 0) {
+              setThreads(response.data.data.comment_threads || []);
+            }
             break;
           case "replies":
             response = await request.getUserReplies(userId);
+            if (response.data?.code === 0) {
+              setReplies(response.data.data.comment_replies || []);
+            }
             break;
           case "upvotes":
             response = await request.getUserVotes(userId, "upvote");
+            if (response.data?.code === 0) {
+              setUpvotes(response.data.data.votes || []);
+            }
             break;
           case "downvotes":
             response = await request.getUserVotes(userId, "downvote");
+            if (response.data?.code === 0) {
+              setDownvotes(response.data.data.votes || []);
+            }
             break;
           default:
             response = await request.getUserProfile(userId);
-        }
-
-        if (response.data?.code === 0) {
-          const data = response.data.data;
-
-          switch (activeTab) {
-            case "threads":
-              setThreads(data.threads || []);
-              break;
-            case "replies":
-              setReplies(data.replies || []);
-              break;
-            case "upvotes":
-              setUpvotes(data.upvotes || []);
-              break;
-            case "downvotes":
-              setDownvotes(data.downvotes || []);
-              break;
-            default:
-              break;
-          }
-        } else {
-          console.error(`Failed to fetch ${activeTab}:`, response.message);
+            break;
         }
       } catch (err) {
         console.error(`Error fetching ${activeTab}:`, err);
@@ -106,18 +102,14 @@ const UserProfilePage = () => {
       }
     };
 
-    if (profile) {
-      fetchActivityData();
-    }
-  }, [profile, activeTab, userId]);
+    fetchActivityData();
+  }, [activeTab, userId, isAuthenticated, profile]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
   const navigateToUserProfile = () => {
-    // This is already the user profile page, but we'll keep the function
-    // for consistency with other components
     if (profile && profile.id) {
       navigate(`/user/${profile.id}`);
     }
@@ -142,7 +134,7 @@ const UserProfilePage = () => {
       <div className="user-profile-page error">
         <h2>Error</h2>
         <p>{error}</p>
-        <button onClick={() => navigate(-1)}>Go Back</button>
+        <button onClick={() => window.location.reload()}>Try Again</button>
       </div>
     );
   }
@@ -150,9 +142,8 @@ const UserProfilePage = () => {
   if (!profile) {
     return (
       <div className="user-profile-page not-found">
-        <h2>Profile Not Found</h2>
-        <p>We couldn't find this user's profile information.</p>
-        <button onClick={() => navigate(-1)}>Go Back</button>
+        <h2>User Not Found</h2>
+        <p>The user you're looking for doesn't exist or has been removed.</p>
       </div>
     );
   }
@@ -164,31 +155,25 @@ const UserProfilePage = () => {
           <img
             src={profile.profile_picture || "/images/default-avatar.png"}
             alt={`${profile.username}'s avatar`}
-            onClick={navigateToUserProfile}
           />
         </div>
         <div className="profile-info">
-          <h1 className="clickable" onClick={navigateToUserProfile}>
-            {profile.username}
-          </h1>
+          <h1>{profile.username}</h1>
           <div className="profile-meta">
-            <div className="meta-item">
-              <span className="meta-label">Member Since</span>
-              <span className="meta-value">
-                {formatDate(profile.created_at)}
-              </span>
+            <div className="profile-level">
+              <span className="label">Level:</span>
+              <span className="value">{profile.level || 1}</span>
             </div>
-            <div className="meta-item">
-              <span className="meta-label">Level</span>
-              <span className="meta-value">{profile.level}</span>
+            <div className="profile-member-since">
+              <span className="label">Member since:</span>
+              <span className="value">{formatDate(profile.created_at)}</span>
             </div>
-            {/* Note: We don't show points for privacy reasons */}
           </div>
         </div>
       </div>
 
-      <div className="profile-tabs">
-        <div className="tabs-header">
+      <div className="profile-activity">
+        <div className="activity-tabs">
           <button
             className={`tab-button ${activeTab === "threads" ? "active" : ""}`}
             onClick={() => handleTabChange("threads")}
@@ -202,7 +187,7 @@ const UserProfilePage = () => {
             Replies
           </button>
           <button
-            className={`tab-button ${activeTab === "votes" ? "active" : ""}`}
+            className={`tab-button ${activeTab === "upvotes" ? "active" : ""}`}
             onClick={() => handleTabChange("upvotes")}
           >
             Upvotes
@@ -217,57 +202,52 @@ const UserProfilePage = () => {
           </button>
         </div>
 
-        <div className="tab-content">
+        <div className="activity-content">
           {activityLoading ? (
             <div className="activity-loading">
-              <div className="loading-spinner small"></div>
-              <p>Loading {activeTab}...</p>
+              <div className="loading-spinner"></div>
+              <p>Loading activity...</p>
             </div>
           ) : (
             <>
               {activeTab === "threads" && (
                 <div className="threads-list">
+                  <h2>Comment Threads</h2>
                   {threads.length > 0 ? (
-                    threads.map((thread) => (
-                      <div key={thread.id} className="thread-item">
-                        <div className="thread-header">
-                          <h3>
-                            <Link to={`/entity/${thread.entity_id}`}>
-                              {thread.title ||
-                                `Thread #${thread.comment_thread_id}`}
+                    <div className="threads">
+                      {threads.map((thread) => (
+                        <div key={thread.id} className="thread-item">
+                          <div className="thread-header">
+                            <Link
+                              to={`/entity/${thread.entity_id}`}
+                              className="entity-link"
+                            >
+                              {thread.entity_name || "Unknown Entity"}
                             </Link>
-                          </h3>
-                          {thread.rating && (
-                            <div className="thread-rating">
-                              Rating:{" "}
-                              <span className="rating-value">
-                                {thread.rating}/5
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="thread-content">
-                          <p>{thread.content}</p>
-                        </div>
-                        <div className="thread-footer">
-                          <span>{formatDate(thread.created_at)}</span>
+                            <span className="thread-date">
+                              {formatDate(thread.created_at)}
+                            </span>
+                          </div>
+                          <div className="thread-content">
+                            <p>{thread.content}</p>
+                          </div>
                           <div className="thread-stats">
                             <span className="upvotes">
-                              {thread.upvotes_count || 0} upvotes
+                              👍 {thread.upvote_count || 0}
                             </span>
                             <span className="downvotes">
-                              {thread.downvotes_count || 0} downvotes
+                              👎 {thread.downvote_count || 0}
                             </span>
                             <span className="replies">
-                              {thread.replies_count || 0} replies
+                              💬 {thread.replies_count || 0}
                             </span>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   ) : (
-                    <div className="empty-state">
-                      <p>This user hasn't created any threads yet.</p>
+                    <div className="no-activity">
+                      <p>No comment threads yet.</p>
                     </div>
                   )}
                 </div>
@@ -275,26 +255,31 @@ const UserProfilePage = () => {
 
               {activeTab === "replies" && (
                 <div className="replies-list">
+                  <h2>Comment Replies</h2>
                   {replies.length > 0 ? (
-                    replies.map((reply) => (
-                      <div key={reply.id} className="reply-item">
-                        <div className="reply-content">
-                          <p>{reply.content}</p>
-                        </div>
-                        <div className="reply-footer">
-                          <span>
-                            In response to{" "}
-                            <Link to={`/entity/${reply.entity_id}`}>
-                              Thread #{reply.thread_id}
+                    <div className="replies">
+                      {replies.map((reply) => (
+                        <div key={reply.id} className="reply-item">
+                          <div className="reply-header">
+                            <Link
+                              to={`/entity/${reply.entity_id}`}
+                              className="entity-link"
+                            >
+                              {reply.entity_name || "Unknown Entity"}
                             </Link>
-                          </span>
-                          <span>{formatDate(reply.created_at)}</span>
+                            <span className="reply-date">
+                              {formatDate(reply.created_at)}
+                            </span>
+                          </div>
+                          <div className="reply-content">
+                            <p>{reply.content}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   ) : (
-                    <div className="empty-state">
-                      <p>This user hasn't replied to any threads yet.</p>
+                    <div className="no-activity">
+                      <p>No replies yet.</p>
                     </div>
                   )}
                 </div>
@@ -302,27 +287,31 @@ const UserProfilePage = () => {
 
               {activeTab === "upvotes" && (
                 <div className="votes-list">
+                  <h2>Upvoted Comments</h2>
                   {upvotes.length > 0 ? (
-                    upvotes.map((vote) => (
-                      <div key={vote.id} className="vote-item">
-                        <div className="vote-type">
-                          <span className={(vote.type = "upvote")}>
-                            {(vote.type = "Upvoted")}
-                          </span>
+                    <div className="votes">
+                      {upvotes.map((vote) => (
+                        <div key={vote.id} className="vote-item">
+                          <div className="vote-header">
+                            <Link
+                              to={`/entity/${vote.entity_id}`}
+                              className="entity-link"
+                            >
+                              {vote.entity_name || "Unknown Entity"}
+                            </Link>
+                            <span className="vote-date">
+                              {formatDate(vote.created_at)}
+                            </span>
+                          </div>
+                          <div className="vote-content">
+                            <p>{vote.comment_content}</p>
+                          </div>
                         </div>
-                        <div className="vote-thread-id">
-                          <Link to={`/entity/${vote.entity_id}`}>
-                            Thread #{vote.thread_id}
-                          </Link>
-                        </div>
-                        <div className="vote-date">
-                          {formatDate(vote.created_at)}
-                        </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   ) : (
-                    <div className="empty-state">
-                      <p>This user hasn't voted on any threads yet.</p>
+                    <div className="no-activity">
+                      <p>No upvotes yet.</p>
                     </div>
                   )}
                 </div>
@@ -330,27 +319,31 @@ const UserProfilePage = () => {
 
               {activeTab === "downvotes" && (
                 <div className="votes-list">
+                  <h2>Downvoted Comments</h2>
                   {downvotes.length > 0 ? (
-                    downvotes.map((vote) => (
-                      <div key={vote.id} className="vote-item">
-                        <div className="vote-type">
-                          <span className={(vote.type = "downvote")}>
-                            {(vote.type = "Downvoted")}
-                          </span>
+                    <div className="votes">
+                      {downvotes.map((vote) => (
+                        <div key={vote.id} className="vote-item">
+                          <div className="vote-header">
+                            <Link
+                              to={`/entity/${vote.entity_id}`}
+                              className="entity-link"
+                            >
+                              {vote.entity_name || "Unknown Entity"}
+                            </Link>
+                            <span className="vote-date">
+                              {formatDate(vote.created_at)}
+                            </span>
+                          </div>
+                          <div className="vote-content">
+                            <p>{vote.comment_content}</p>
+                          </div>
                         </div>
-                        <div className="vote-thread-id">
-                          <Link to={`/entity/${vote.entity_id}`}>
-                            Thread #{vote.thread_id}
-                          </Link>
-                        </div>
-                        <div className="vote-date">
-                          {formatDate(vote.created_at)}
-                        </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   ) : (
-                    <div className="empty-state">
-                      <p>This user hasn't voted on any threads yet.</p>
+                    <div className="no-activity">
+                      <p>No downvotes yet.</p>
                     </div>
                   )}
                 </div>
