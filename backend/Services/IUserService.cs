@@ -6,5 +6,7 @@ namespace backend.Services
     public interface IUserService
     {
         Task<UserDetail> GetOrCreateUserAsync(ClaimsPrincipal metadata);
+        
+        Task<UserDetail> GetUserAsync(Guid userId);    
     }
 }

@@ -42,5 +42,11 @@ namespace backend.Services
             // Delegate to the repository to get or create the user record
             return await _userRepository.GetOrCreateUserAsync(metadata);
         }
+
+        public async Task<UserDetail> GetUserAsync(Guid userId)
+        {
+            var user = await _userRepository.GetUserAsync(userId) ?? throw new KeyNotFoundException($"User with ID {userId} not found.");
+            return user;
+        }
     }
 }

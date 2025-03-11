@@ -31,7 +31,10 @@ if (connectionString.Contains("PLACE_HOLDER"))
 builder.Services.AddDbContext<UserDetailDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Add base services
+// Register MongoDB context
+builder.Services.AddSingleton<MongoDBContext>();
+
+// Add base services 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -56,11 +59,11 @@ builder.Services.AddCors(options =>
 
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ICategoryRepository, MockCategoryRepository>();
-builder.Services.AddScoped<IEntityRepository, MockEntityRepository>();
-builder.Services.AddScoped<ICommentThreadRepository, MockCommentThreadRepository>();
-builder.Services.AddScoped<ICommentReplyRepository, MockCommentReplyRepository>();
-builder.Services.AddScoped<IVoteRepository, MockVoteRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IEntityRepository, EntityRepository>();
+builder.Services.AddScoped<ICommentThreadRepository, CommentThreadRepository>();
+builder.Services.AddScoped<ICommentReplyRepository, CommentReplyRepository>();
+builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
